@@ -95,6 +95,11 @@ const CourseRPS = () => {
     updateAssessmentPlanFromCpmk();
   }, [cpmkItems, subCpmkItems]);
 
+  // Initialize learning activities from Sub-CPMK
+  useEffect(() => {
+    updateLearningActivitiesFromSubCpmk();
+  }, [subCpmkItems]);
+
   // Editing states for assessment plan
   const [editingAssessment, setEditingAssessment] = useState<number | null>(null);
 
