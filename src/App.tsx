@@ -11,6 +11,7 @@ import CPMK from "./pages/CPMK";
 import SubCPMK from "./pages/SubCPMK";
 import RencanaKegiatanPembelajaran from "./pages/RencanaKegiatanPembelajaran";
 import MetodeEvaluasi from "./pages/MetodeEvaluasi";
+import Bobot from "./pages/Bobot";
 import Referensi from "./pages/Referensi";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/sub-cpmk" element={<SubCPMK />} />
           <Route path="/rencana-kegiatan-pembelajaran" element={<RencanaKegiatanPembelajaran />} />
           <Route path="/metode-evaluasi" element={<MetodeEvaluasi />} />
+          <Route path="/bobot" element={<Bobot />} />
           <Route path="/referensi" element={<Referensi />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -8,7 +8,8 @@ import {
   Calendar, 
   ClipboardCheck, 
   BookMarked,
-  GraduationCap
+  GraduationCap,
+  BarChart
 } from "lucide-react";
 
 const Index = () => {
@@ -56,11 +57,18 @@ const Index = () => {
       color: "secondary" as const
     },
     {
+      title: "Bobot (Persentase)",
+      description: "Distribusi dan persentase penilaian untuk setiap komponen evaluasi mata kuliah.",
+      icon: <BarChart className="h-6 w-6" />,
+      href: "/bobot",
+      color: "primary" as const
+    },
+    {
       title: "Referensi",
       description: "Sumber pustaka berupa buku teks, jurnal ilmiah, dan sumber digital yang mendukung pembelajaran.",
       icon: <BookMarked className="h-6 w-6" />,
       href: "/referensi",
-      color: "primary" as const
+      color: "accent" as const
     }
   ];
 
