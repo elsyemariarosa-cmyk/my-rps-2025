@@ -59,10 +59,51 @@ const CourseRPS = () => {
     setLearningActivities(activities);
   };
 
-  // Initialize learning activities from Sub-CPMK
+  // Assessment and evaluation plan state
+  const [assessmentPlan, setAssessmentPlan] = useState<any[]>([]);
+
+  // Update assessment plan when CPMK/Sub-CPMK changes
+  const updateAssessmentPlanFromCpmk = () => {
+    const plan: any[] = [];
+    
+    cpmkItems.forEach((cpmk) => {
+      const relatedSubCpmk = subCpmkItems.filter(subCpmk => 
+        subCpmk.code.includes(cpmk.title.split('-')[1]) || 
+        subCpmk.code.includes('CPMK')
+      );
+      
+      if (relatedSubCpmk.length > 0) {
+        plan.push({
+          id: Date.now() + Math.random(),
+          week: "",
+          cpl: "CPL",
+          cpmk: cpmk.title,
+          subCpmkList: relatedSubCpmk,
+          subCpmkWeights: relatedSubCpmk.reduce((acc, sub) => ({ ...acc, [sub.code]: "" }), {}),
+          indicator: "",
+          assessmentForm: "",
+          cpmkWeight: ""
+        });
+      }
+    });
+    
+    setAssessmentPlan(plan);
+  };
+
+  // Initialize assessment plan from CPMK/Sub-CPMK
   useEffect(() => {
-    updateLearningActivitiesFromSubCpmk();
-  }, [subCpmkItems]);
+    updateAssessmentPlanFromCpmk();
+  }, [cpmkItems, subCpmkItems]);
+
+  // Editing states for assessment plan
+  const [editingAssessment, setEditingAssessment] = useState<number | null>(null);
+
+  // Assessment plan helper functions
+  const updateAssessmentPlan = (id: number, data: any) => {
+    setAssessmentPlan(assessmentPlan.map(item => item.id === id ? { ...item, ...data } : item));
+    setEditingAssessment(null);
+    toast({ title: "Rencana penilaian berhasil diperbarui", description: "Perubahan telah disimpan." });
+  };
   
   // Editing states
   const [editingCpl, setEditingCpl] = useState<number | null>(null);
@@ -883,28 +924,205 @@ const CourseRPS = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CheckCircle className="h-5 w-5" />
-                    Metode Evaluasi
+                    Rencana Penilaian dan Evaluasi
                   </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Rencana penilaian otomatis dibuat berdasarkan CPL, CPMK, dan Sub-CPMK yang telah didefinisikan. 
+                    Silakan lengkapi detail penilaian untuk setiap komponen.
+                  </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-4 bg-primary/5 rounded-lg">
-                      <h4 className="font-semibold mb-2">Penilaian Formatif</h4>
-                      <ul className="list-disc list-inside text-muted-foreground text-sm space-y-1">
-                        <li>Kuis mingguan</li>
-                        <li>Diskusi kelas</li>
-                        <li>Tugas individu</li>
-                      </ul>
-                    </div>
-                    <div className="p-4 bg-secondary/5 rounded-lg">
-                      <h4 className="font-semibold mb-2">Penilaian Sumatif</h4>
-                      <ul className="list-disc list-inside text-muted-foreground text-sm space-y-1">
-                        <li>Ujian Tengah Semester (UTS)</li>
-                        <li>Ujian Akhir Semester (UAS)</li>
-                        <li>Proyek akhir</li>
-                      </ul>
-                    </div>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-primary/10">
+                          <TableHead className="text-center font-bold text-white bg-primary">Minggu ke-</TableHead>
+                          <TableHead className="text-center font-bold text-white bg-primary">CPL</TableHead>
+                          <TableHead className="text-center font-bold text-white bg-primary">CPMK</TableHead>
+                          <TableHead className="text-center font-bold text-white bg-primary">Sub-CPMK</TableHead>
+                          <TableHead className="text-center font-bold text-white bg-primary">Bobot Sub-CPMK</TableHead>
+                          <TableHead className="text-center font-bold text-white bg-primary">Indikator</TableHead>
+                          <TableHead className="text-center font-bold text-white bg-primary">Bentuk Penilaian</TableHead>
+                          <TableHead className="text-center font-bold text-white bg-primary">Bobot CPMK (%)</TableHead>
+                          <TableHead className="text-center font-bold text-white bg-primary">Aksi</TableHead>
+                        </TableRow>
+                        <TableRow className="text-center text-sm bg-muted/30">
+                          <TableHead className="text-center">a</TableHead>
+                          <TableHead className="text-center">b</TableHead>
+                          <TableHead className="text-center">c</TableHead>
+                          <TableHead className="text-center">d</TableHead>
+                          <TableHead className="text-center">e</TableHead>
+                          <TableHead className="text-center">f</TableHead>
+                          <TableHead className="text-center">g</TableHead>
+                          <TableHead className="text-center">h</TableHead>
+                          <TableHead className="text-center">i</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {assessmentPlan.map((plan) => (
+                          <TableRow key={plan.id}>
+                            <TableCell className="text-center">
+                              {editingAssessment === plan.id ? (
+                                <Input
+                                  defaultValue={plan.week}
+                                  onChange={(e) => plan.week = e.target.value}
+                                  className="w-20 text-center"
+                                  placeholder="4"
+                                />
+                              ) : (
+                                <div className="text-sm">
+                                  {plan.week || <span className="text-muted-foreground italic">Edit</span>}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {editingAssessment === plan.id ? (
+                                <Select 
+                                  defaultValue={plan.cpl}
+                                  onValueChange={(value) => plan.cpl = value}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-popover border z-50">
+                                    {cplItems.map((cpl) => (
+                                      <SelectItem key={cpl.id} value={cpl.title}>
+                                        {cpl.title}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <Badge variant="secondary">{plan.cpl}</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Badge variant="outline">{plan.cpmk}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="space-y-1">
+                                {plan.subCpmkList.map((subCpmk: any) => (
+                                  <div key={subCpmk.id} className="flex items-center justify-between p-2 bg-muted/30 rounded text-sm">
+                                    <Badge variant="outline" className="text-xs">{subCpmk.code}</Badge>
+                                    {editingAssessment === plan.id ? (
+                                      <Input
+                                        defaultValue={plan.subCpmkWeights[subCpmk.code]}
+                                        onChange={(e) => plan.subCpmkWeights[subCpmk.code] = e.target.value}
+                                        className="w-16 text-center ml-2"
+                                        placeholder="5%"
+                                      />
+                                    ) : (
+                                      <span className="text-xs text-muted-foreground ml-2">
+                                        {plan.subCpmkWeights[subCpmk.code] || "-%"}
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <div className="text-sm font-medium">
+                                {plan.subCpmkList.reduce((total: number, sub: any) => {
+                                  const weight = parseInt(plan.subCpmkWeights[sub.code]?.replace('%', '') || '0');
+                                  return total + weight;
+                                }, 0)}%
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {editingAssessment === plan.id ? (
+                                <Textarea
+                                  defaultValue={plan.indicator}
+                                  onChange={(e) => plan.indicator = e.target.value}
+                                  rows={3}
+                                  placeholder="Mengidentifikasi nilai dan hasil..."
+                                />
+                              ) : (
+                                <div className="text-sm">
+                                  {plan.indicator || <span className="text-muted-foreground italic">Klik edit untuk menambahkan indikator</span>}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingAssessment === plan.id ? (
+                                <Textarea
+                                  defaultValue={plan.assessmentForm}
+                                  onChange={(e) => plan.assessmentForm = e.target.value}
+                                  rows={3}
+                                  placeholder="Kuis myklass, Ujian tertulis..."
+                                />
+                              ) : (
+                                <div className="text-sm">
+                                  {plan.assessmentForm || <span className="text-muted-foreground italic">Klik edit untuk menambahkan bentuk penilaian</span>}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {editingAssessment === plan.id ? (
+                                <Input
+                                  defaultValue={plan.cpmkWeight}
+                                  onChange={(e) => plan.cpmkWeight = e.target.value}
+                                  className="w-16 text-center"
+                                  placeholder="20%"
+                                />
+                              ) : (
+                                plan.cpmkWeight ? (
+                                  <Badge variant="secondary" className="font-bold">{plan.cpmkWeight}</Badge>
+                                ) : (
+                                  <span className="text-muted-foreground italic text-xs">Edit</span>
+                                )
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingAssessment === plan.id ? (
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => updateAssessmentPlan(plan.id, plan)}
+                                  >
+                                    <Save className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setEditingAssessment(null)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => setEditingAssessment(plan.id)}
+                                >
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        {/* Total Row */}
+                        <TableRow className="bg-muted/50 font-bold">
+                          <TableCell className="text-center">-</TableCell>
+                          <TableCell className="text-center">-</TableCell>
+                          <TableCell className="text-center">-</TableCell>
+                          <TableCell className="text-center">-</TableCell>
+                          <TableCell className="text-center">100%</TableCell>
+                          <TableCell className="text-center">-</TableCell>
+                          <TableCell className="text-center font-bold">Jumlah</TableCell>
+                          <TableCell className="text-center font-bold">100</TableCell>
+                          <TableCell className="text-center">-</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
                   </div>
+                  {assessmentPlan.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>Belum ada rencana penilaian.</p>
+                      <p className="text-sm">Tambahkan CPMK dan Sub-CPMK terlebih dahulu untuk membuat rencana penilaian otomatis.</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
