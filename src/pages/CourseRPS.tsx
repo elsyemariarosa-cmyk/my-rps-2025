@@ -1204,8 +1204,8 @@ const CourseRPS = () => {
                       </div>
                       <div className="text-center">
                         <h2 className="text-xl font-bold">UNIVERSITAS MUHAMMADIYAH YOGYAKARTA</h2>
-                        <p className="text-sm">Fakultas Kedokteran dan Ilmu Kesehatan</p>
-                        <p className="text-sm">Prodi Magister Administrasi Rumah Sakit</p>
+                        <p className="text-sm font-bold">Fakultas Kedokteran dan Ilmu Kesehatan</p>
+                        <p className="text-sm font-bold">Prodi Magister Administrasi Rumah Sakit</p>
                         <h3 className="text-lg font-bold mt-2 bg-green-700 text-white px-4 py-1 rounded">
                           RENCANA PENILAIAN TUGAS/UJIAN
                         </h3>
