@@ -441,39 +441,39 @@ const CourseRPS = () => {
         <div className="container mx-auto px-4">
           <Tabs defaultValue="deskripsi" className="w-full">
             <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 mb-8">
-              <TabsTrigger value="deskripsi" className="text-xs">
+              <TabsTrigger value="deskripsi" className="text-xs font-bold bg-blue-100 text-blue-800 hover:bg-blue-200 data-[state=active]:bg-blue-500 data-[state=active]:text-white">
                 <BookOpen className="h-4 w-4 mr-1" />
                 Deskripsi
               </TabsTrigger>
-              <TabsTrigger value="cpl" className="text-xs">
+              <TabsTrigger value="cpl" className="text-xs font-bold bg-green-100 text-green-800 hover:bg-green-200 data-[state=active]:bg-green-500 data-[state=active]:text-white">
                 <Target className="h-4 w-4 mr-1" />
                 CPL
               </TabsTrigger>
-              <TabsTrigger value="cpmk" className="text-xs">
+              <TabsTrigger value="cpmk" className="text-xs font-bold bg-purple-100 text-purple-800 hover:bg-purple-200 data-[state=active]:bg-purple-500 data-[state=active]:text-white">
                 <ListChecks className="h-4 w-4 mr-1" />
                 CPMK
               </TabsTrigger>
-              <TabsTrigger value="subcpmk" className="text-xs">
+              <TabsTrigger value="subcpmk" className="text-xs font-bold bg-orange-100 text-orange-800 hover:bg-orange-200 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
                 <GitBranch className="h-4 w-4 mr-1" />
                 Sub-CPMK
               </TabsTrigger>
-              <TabsTrigger value="rencana" className="text-xs">
+              <TabsTrigger value="rencana" className="text-xs font-bold bg-indigo-100 text-indigo-800 hover:bg-indigo-200 data-[state=active]:bg-indigo-500 data-[state=active]:text-white">
                 <Calendar className="h-4 w-4 mr-1" />
                 Rencana
               </TabsTrigger>
-              <TabsTrigger value="penilaian" className="text-xs">
+              <TabsTrigger value="penilaian" className="text-xs font-bold bg-red-100 text-red-800 hover:bg-red-200 data-[state=active]:bg-red-500 data-[state=active]:text-white">
                 <CheckCircle className="h-4 w-4 mr-1" />
                 Tugas/Ujian
               </TabsTrigger>
-              <TabsTrigger value="evaluasi" className="text-xs">
+              <TabsTrigger value="evaluasi" className="text-xs font-bold bg-teal-100 text-teal-800 hover:bg-teal-200 data-[state=active]:bg-teal-500 data-[state=active]:text-white">
                 <CheckCircle className="h-4 w-4 mr-1" />
                 Evaluasi
               </TabsTrigger>
-              <TabsTrigger value="bobot" className="text-xs">
+              <TabsTrigger value="bobot" className="text-xs font-bold bg-amber-100 text-amber-800 hover:bg-amber-200 data-[state=active]:bg-amber-500 data-[state=active]:text-white">
                 <BarChart3 className="h-4 w-4 mr-1" />
                 Bobot
               </TabsTrigger>
-              <TabsTrigger value="referensi" className="text-xs">
+              <TabsTrigger value="referensi" className="text-xs font-bold bg-cyan-100 text-cyan-800 hover:bg-cyan-200 data-[state=active]:bg-cyan-500 data-[state=active]:text-white">
                 <BookMarked className="h-4 w-4 mr-1" />
                 Referensi
               </TabsTrigger>
