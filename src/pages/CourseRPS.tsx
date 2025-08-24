@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BookOpen, Target, ListChecks, GitBranch, Calendar, CheckCircle, BarChart3, BookMarked, Plus, Edit, Trash2, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -713,11 +714,21 @@ const CourseRPS = () => {
                           </div>
                           <div>
                             <label className="text-sm font-medium">Sub-CPMK</label>
-                            <Input
-                              value={activityForm.subCpmk}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, subCpmk: e.target.value }))}
-                              placeholder="Contoh: Sub-CPMK-1"
-                            />
+                            <Select 
+                              value={activityForm.subCpmk} 
+                              onValueChange={(value) => setActivityForm(prev => ({ ...prev, subCpmk: value }))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Pilih Sub-CPMK" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {subCpmkItems.map((item) => (
+                                  <SelectItem key={item.id} value={item.code}>
+                                    {item.code} - {item.description.substring(0, 50)}...
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                           <div className="col-span-2">
                             <label className="text-sm font-medium">Indikator</label>
@@ -830,12 +841,28 @@ const CourseRPS = () => {
                             </TableCell>
                             <TableCell>
                               {editingActivity === activity.id ? (
-                                <Input
+                                <Select 
                                   defaultValue={activity.subCpmk}
-                                  onChange={(e) => activity.subCpmk = e.target.value}
-                                />
+                                  onValueChange={(value) => activity.subCpmk = value}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {subCpmkItems.map((item) => (
+                                      <SelectItem key={item.id} value={item.code}>
+                                        {item.code}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
                               ) : (
-                                <div className="text-sm">{activity.subCpmk}</div>
+                                <div className="text-sm">
+                                  <Badge variant="secondary" className="mb-1">{activity.subCpmk}</Badge>
+                                  <div className="text-xs text-muted-foreground">
+                                    {subCpmkItems.find(item => item.code === activity.subCpmk)?.description.substring(0, 60)}...
+                                  </div>
+                                </div>
                               )}
                             </TableCell>
                             <TableCell>
