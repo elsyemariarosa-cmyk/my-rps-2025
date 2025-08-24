@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Kurikulum from "./pages/Kurikulum";
+import CourseRPS from "./pages/CourseRPS";
 import NotFound from "./pages/NotFound";
 import DeskripsiMataKuliah from "./pages/DeskripsiMataKuliah";
 import CapaianPembelajaran from "./pages/CapaianPembelajaran";
@@ -26,6 +27,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/kurikulum" element={<Kurikulum />} />
+          <Route path="/rps/:semester/:courseSlug" element={<CourseRPS />} />
           <Route path="/deskripsi-mata-kuliah" element={<DeskripsiMataKuliah />} />
           <Route path="/capaian-pembelajaran" element={<CapaianPembelajaran />} />
           <Route path="/cpmk" element={<CPMK />} />
