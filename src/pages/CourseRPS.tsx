@@ -82,39 +82,17 @@ const CourseRPS = () => {
   const [taskExamPlan, setTaskExamPlan] = useState<any[]>([
     {
       id: 1,
-      jenisPenilaian: "Tugas 1",
-      deskripsi: "Analisis Kasus Manajemen Rumah Sakit",
-      bobotPersen: 15,
-      waktuPelaksanaan: "Minggu ke-4",
-      kriteriaPenilaian: "Kemampuan analisis, originalitas, dan presentasi",
-      metodePengumpulan: "Online/Upload"
-    },
-    {
-      id: 2,
-      jenisPenilaian: "UTS",
-      deskripsi: "Ujian Tengah Semester - Teori dan Konsep Dasar",
-      bobotPersen: 30,
-      waktuPelaksanaan: "Minggu ke-8",
-      kriteriaPenilaian: "Pemahaman konsep, aplikasi teori, kemampuan analisis",
-      metodePengumpulan: "Online/Offline"
-    },
-    {
-      id: 3,
-      jenisPenilaian: "Tugas 2", 
-      deskripsi: "Proyek Implementasi Sistem Manajemen",
-      bobotPersen: 25,
-      waktuPelaksanaan: "Minggu ke-12",
-      kriteriaPenilaian: "Implementasi, inovasi, dan dokumentasi",
-      metodePengumpulan: "Presentasi + Laporan"
-    },
-    {
-      id: 4,
-      jenisPenilaian: "UAS",
-      deskripsi: "Ujian Akhir Semester - Komprehensif",
-      bobotPersen: 30,
-      waktuPelaksanaan: "Minggu ke-16",
-      kriteriaPenilaian: "Penguasaan keseluruhan materi dan aplikasi praktis",
-      metodePengumpulan: "Online/Offline"
+      judulPenilaian: "UCPMK1: Kuis MyKlass",
+      bentukPenilaian: "Ujian online berupa Kuis MyKlass",
+      subCpmk: ["Sub-CPMK1", "Sub-CPMK2"],
+      deskripsiPenilaian: "UCPMK 1 ini bertujuan untuk mengukur kemampuan mahasiswa dalam mengidentifikasi parameter ancaman dan kerentanan akibat bencana gempa",
+      metodePenilaian: "Mahasiswa mengerjakan kuis melalui myklass dengan 1 x attempt, waktu pengerjaan 60 menit, Nilai langsung keluar setelah selesai mengerjakan",
+      bentukFormatLuaran: "Luaran berupa score (nilai) yang terecord di Myklass dan terhubung dalam grading nilai",
+      indikatorKriteria: "Mengidentifikasi nilai dan hasil (20%)",
+      bobotPenilaian: 20,
+      jadwalPelaksanaan: "Minggu ke 4 sesuai jadwal perkuliahan",
+      pustaka: "pt materi kuliah pekan ke 1 – 3, buku...., video...., dll",
+      lainLain: "Mahasiswa dengan nilai kurang dari 66 akan diberikan kesempatan remidi 1x"
     }
   ]);
 
@@ -197,12 +175,17 @@ const CourseRPS = () => {
   });
 
   const [taskExamForm, setTaskExamForm] = useState({
-    jenisPenilaian: "",
-    deskripsi: "",
-    bobotPersen: 0,
-    waktuPelaksanaan: "",
-    kriteriaPenilaian: "",
-    metodePengumpulan: ""
+    judulPenilaian: "",
+    bentukPenilaian: "",
+    subCpmk: [],
+    deskripsiPenilaian: "",
+    metodePenilaian: "",
+    bentukFormatLuaran: "",
+    indikatorKriteria: "",
+    bobotPenilaian: 0,
+    jadwalPelaksanaan: "",
+    pustaka: "",
+    lainLain: ""
   });
 
   // Helper functions
@@ -315,19 +298,24 @@ const CourseRPS = () => {
 
   // Task/Exam assessment helper functions
   const addTaskExamItem = () => {
-    if (taskExamForm.jenisPenilaian && taskExamForm.deskripsi && taskExamForm.bobotPersen > 0) {
+    if (taskExamForm.judulPenilaian && taskExamForm.deskripsiPenilaian && taskExamForm.bobotPenilaian > 0) {
       const newId = Math.max(...taskExamPlan.map(item => item.id), 0) + 1;
       setTaskExamPlan([...taskExamPlan, { 
         id: newId, 
         ...taskExamForm 
       }]);
       setTaskExamForm({
-        jenisPenilaian: "",
-        deskripsi: "",
-        bobotPersen: 0,
-        waktuPelaksanaan: "",
-        kriteriaPenilaian: "",
-        metodePengumpulan: ""
+        judulPenilaian: "",
+        bentukPenilaian: "",
+        subCpmk: [],
+        deskripsiPenilaian: "",
+        metodePenilaian: "",
+        bentukFormatLuaran: "",
+        indikatorKriteria: "",
+        bobotPenilaian: 0,
+        jadwalPelaksanaan: "",
+        pustaka: "",
+        lainLain: ""
       });
       setNewTaskExamDialog(false);
       toast({ title: "Rencana penilaian berhasil ditambahkan", description: "Item penilaian baru telah disimpan." });
@@ -1202,77 +1190,147 @@ const CourseRPS = () => {
                           Tambah Penilaian
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
+                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle>Tambah Rencana Penilaian</DialogTitle>
+                          <DialogTitle>Tambah Rencana Penilaian Tugas/Ujian</DialogTitle>
                           <DialogDescription>
-                            Buat rencana penilaian baru untuk mata kuliah ini
+                            Buat rencana penilaian sesuai template UMY
                           </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-sm font-medium">Jenis Penilaian</label>
-                              <Input
-                                placeholder="Contoh: Tugas 1, UTS, UAS"
-                                value={taskExamForm.jenisPenilaian}
-                                onChange={(e) => setTaskExamForm({...taskExamForm, jenisPenilaian: e.target.value})}
-                              />
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium">Bobot (%)</label>
-                              <Input
-                                type="number"
-                                placeholder="15"
-                                value={taskExamForm.bobotPersen}
-                                onChange={(e) => setTaskExamForm({...taskExamForm, bobotPersen: parseInt(e.target.value) || 0})}
-                              />
+                        <div className="grid gap-6 py-4">
+                          {/* Header Information */}
+                          <div className="bg-muted/30 p-4 rounded-lg">
+                            <h4 className="font-semibold mb-3">Informasi Dasar</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium">Judul Penilaian</label>
+                                <Input
+                                  placeholder="Contoh: UCPMK1: Kuis MyKlass"
+                                  value={taskExamForm.judulPenilaian}
+                                  onChange={(e) => setTaskExamForm({...taskExamForm, judulPenilaian: e.target.value})}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium">Bobot Penilaian (%)</label>
+                                <Input
+                                  type="number"
+                                  placeholder="20"
+                                  value={taskExamForm.bobotPenilaian}
+                                  onChange={(e) => setTaskExamForm({...taskExamForm, bobotPenilaian: parseInt(e.target.value) || 0})}
+                                />
+                              </div>
                             </div>
                           </div>
+
+                          {/* Bentuk Penilaian */}
+                          <div>
+                            <label className="text-sm font-medium">Bentuk Penilaian</label>
+                            <Textarea
+                              placeholder="Tuliskan bentuk penilaian, contoh: Ujian online berupa Kuis MyKlass"
+                              value={taskExamForm.bentukPenilaian}
+                              onChange={(e) => setTaskExamForm({...taskExamForm, bentukPenilaian: e.target.value})}
+                              rows={2}
+                            />
+                          </div>
+
+                          {/* Sub-CPMK */}
+                          <div>
+                            <label className="text-sm font-medium">Sub-CPMK</label>
+                            <div className="flex flex-wrap gap-2 p-3 border rounded-lg bg-muted/10">
+                              {subCpmkItems.map((subCpmk) => (
+                                <div key={subCpmk.id} className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    id={`subcpmk-${subCpmk.id}`}
+                                    checked={taskExamForm.subCpmk.includes(subCpmk.code)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setTaskExamForm({...taskExamForm, subCpmk: [...taskExamForm.subCpmk, subCpmk.code]});
+                                      } else {
+                                        setTaskExamForm({...taskExamForm, subCpmk: taskExamForm.subCpmk.filter(code => code !== subCpmk.code)});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor={`subcpmk-${subCpmk.id}`} className="text-sm">
+                                    {subCpmk.code}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Deskripsi Penilaian */}
                           <div>
                             <label className="text-sm font-medium">Deskripsi Penilaian</label>
                             <Textarea
-                              placeholder="Jelaskan bentuk dan materi penilaian..."
-                              value={taskExamForm.deskripsi}
-                              onChange={(e) => setTaskExamForm({...taskExamForm, deskripsi: e.target.value})}
+                              placeholder="Contoh: UCPMK 1 ini bertujuan untuk mengukur kemampuan mahasiswa dalam mengidentifikasi parameter ancaman dan kerentanan akibat bencana gempa"
+                              value={taskExamForm.deskripsiPenilaian}
+                              onChange={(e) => setTaskExamForm({...taskExamForm, deskripsiPenilaian: e.target.value})}
                               rows={3}
                             />
                           </div>
+
+                          {/* Metode Penilaian */}
+                          <div>
+                            <label className="text-sm font-medium">Metode Penilaian</label>
+                            <Textarea
+                              placeholder="Contoh: Mahasiswa mengerjakan kuis melalui myklass dengan 1 x attempt, waktu pengerjaan 60 menit, Nilai langsung keluar setelah selesai mengerjakan"
+                              value={taskExamForm.metodePenilaian}
+                              onChange={(e) => setTaskExamForm({...taskExamForm, metodePenilaian: e.target.value})}
+                              rows={3}
+                            />
+                          </div>
+
+                          {/* Bentuk dan Format Luaran */}
+                          <div>
+                            <label className="text-sm font-medium">Bentuk dan Format Luaran</label>
+                            <Textarea
+                              placeholder="Contoh: Luaran berupa score (nilai) yang terecord di Myklass dan terhubung dalam grading nilai"
+                              value={taskExamForm.bentukFormatLuaran}
+                              onChange={(e) => setTaskExamForm({...taskExamForm, bentukFormatLuaran: e.target.value})}
+                              rows={2}
+                            />
+                          </div>
+
+                          {/* Grid untuk field sisanya */}
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="text-sm font-medium">Waktu Pelaksanaan</label>
+                              <label className="text-sm font-medium">Jadwal Pelaksanaan</label>
                               <Input
-                                placeholder="Minggu ke-4"
-                                value={taskExamForm.waktuPelaksanaan}
-                                onChange={(e) => setTaskExamForm({...taskExamForm, waktuPelaksanaan: e.target.value})}
+                                placeholder="Minggu ke 4 sesuai jadwal perkuliahan"
+                                value={taskExamForm.jadwalPelaksanaan}
+                                onChange={(e) => setTaskExamForm({...taskExamForm, jadwalPelaksanaan: e.target.value})}
                               />
                             </div>
                             <div>
-                              <label className="text-sm font-medium">Metode Pengumpulan</label>
-                              <Select
-                                value={taskExamForm.metodePengumpulan}
-                                onValueChange={(value) => setTaskExamForm({...taskExamForm, metodePengumpulan: value})}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Pilih metode" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Online/Upload">Online/Upload</SelectItem>
-                                  <SelectItem value="Online/Offline">Online/Offline</SelectItem>
-                                  <SelectItem value="Presentasi + Laporan">Presentasi + Laporan</SelectItem>
-                                  <SelectItem value="Praktikum">Praktikum</SelectItem>
-                                  <SelectItem value="Lainnya">Lainnya</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <label className="text-sm font-medium">Indikator, Kriteria</label>
+                              <Input
+                                placeholder="Mengidentifikasi nilai dan hasil (20%)"
+                                value={taskExamForm.indikatorKriteria}
+                                onChange={(e) => setTaskExamForm({...taskExamForm, indikatorKriteria: e.target.value})}
+                              />
                             </div>
                           </div>
+
+                          {/* Pustaka */}
                           <div>
-                            <label className="text-sm font-medium">Kriteria Penilaian</label>
+                            <label className="text-sm font-medium">Pustaka</label>
                             <Textarea
-                              placeholder="Jelaskan kriteria dan rubrik penilaian..."
-                              value={taskExamForm.kriteriaPenilaian}
-                              onChange={(e) => setTaskExamForm({...taskExamForm, kriteriaPenilaian: e.target.value})}
-                              rows={3}
+                              placeholder="Contoh: pt materi kuliah pekan ke 1 – 3, buku...., video...., dll"
+                              value={taskExamForm.pustaka}
+                              onChange={(e) => setTaskExamForm({...taskExamForm, pustaka: e.target.value})}
+                              rows={2}
+                            />
+                          </div>
+
+                          {/* Lain-lain */}
+                          <div>
+                            <label className="text-sm font-medium">Lain-lain</label>
+                            <Textarea
+                              placeholder="Contoh: Mahasiswa dengan nilai kurang dari 66 akan diberikan kesempatan remidi 1x"
+                              value={taskExamForm.lainLain}
+                              onChange={(e) => setTaskExamForm({...taskExamForm, lainLain: e.target.value})}
+                              rows={2}
                             />
                           </div>
                         </div>
@@ -1288,149 +1346,93 @@ const CourseRPS = () => {
                     </Dialog>
                   </CardTitle>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Kelola rencana penilaian tugas, ujian, dan komponen penilaian lainnya untuk mata kuliah ini.
+                    Template Rencana Penilaian Tugas/Ujian sesuai format UMY
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="min-w-32">Jenis Penilaian</TableHead>
-                          <TableHead className="min-w-48">Deskripsi</TableHead>
-                          <TableHead className="w-20 text-center">Bobot (%)</TableHead>
-                          <TableHead className="min-w-32">Waktu</TableHead>
-                          <TableHead className="min-w-40">Kriteria Penilaian</TableHead>
-                          <TableHead className="min-w-32">Metode</TableHead>
-                          <TableHead className="w-20">Aksi</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {taskExamPlan.map((item) => (
-                          <TableRow key={item.id}>
-                            <TableCell>
-                              <Badge 
-                                variant={
-                                  item.jenisPenilaian.includes('UTS') || item.jenisPenilaian.includes('UAS') ? 'default' :
-                                  item.jenisPenilaian.includes('Tugas') ? 'secondary' : 'outline'
-                                }
-                                className="font-semibold"
-                              >
-                                {item.jenisPenilaian}
+                  <div className="space-y-6">
+                    {taskExamPlan.map((item, index) => (
+                      <Card key={item.id} className="border-l-4 border-l-primary">
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg">{item.judulPenilaian}</CardTitle>
+                            <div className="flex gap-2">
+                              <Badge variant="default" className="text-base px-3 py-1">
+                                {item.bobotPenilaian}%
                               </Badge>
-                            </TableCell>
-                            <TableCell>
-                              {editingTaskExam === item.id ? (
-                                <Textarea
-                                  defaultValue={item.deskripsi}
-                                  onChange={(e) => item.deskripsi = e.target.value}
-                                  rows={2}
-                                  className="text-sm"
-                                />
-                              ) : (
-                                <div className="text-sm">{item.deskripsi}</div>
-                              )}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {editingTaskExam === item.id ? (
-                                <Input
-                                  type="number"
-                                  defaultValue={item.bobotPersen}
-                                  onChange={(e) => item.bobotPersen = parseInt(e.target.value) || 0}
-                                  className="w-16 text-center"
-                                />
-                              ) : (
-                                <Badge variant="outline" className="font-bold">
-                                  {item.bobotPersen}%
-                                </Badge>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {editingTaskExam === item.id ? (
-                                <Input
-                                  defaultValue={item.waktuPelaksanaan}
-                                  onChange={(e) => item.waktuPelaksanaan = e.target.value}
-                                  className="text-sm"
-                                />
-                              ) : (
-                                <div className="text-sm">{item.waktuPelaksanaan}</div>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {editingTaskExam === item.id ? (
-                                <Textarea
-                                  defaultValue={item.kriteriaPenilaian}
-                                  onChange={(e) => item.kriteriaPenilaian = e.target.value}
-                                  rows={2}
-                                  className="text-sm"
-                                />
-                              ) : (
-                                <div className="text-sm">{item.kriteriaPenilaian}</div>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {editingTaskExam === item.id ? (
-                                <Select
-                                  defaultValue={item.metodePengumpulan}
-                                  onValueChange={(value) => item.metodePengumpulan = value}
-                                >
-                                  <SelectTrigger className="text-xs">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Online/Upload">Online/Upload</SelectItem>
-                                    <SelectItem value="Online/Offline">Online/Offline</SelectItem>
-                                    <SelectItem value="Presentasi + Laporan">Presentasi + Laporan</SelectItem>
-                                    <SelectItem value="Praktikum">Praktikum</SelectItem>
-                                    <SelectItem value="Lainnya">Lainnya</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              ) : (
-                                <Badge variant="outline" className="text-xs">
-                                  {item.metodePengumpulan}
-                                </Badge>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {editingTaskExam === item.id ? (
-                                <div className="flex flex-col gap-1">
-                                  <Button
-                                    size="sm"
-                                    onClick={() => updateTaskExamItem(item.id, item)}
-                                  >
-                                    <Save className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setEditingTaskExam(null)}
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ) : (
-                                <div className="flex flex-col gap-1">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => setEditingTaskExam(item.id)}
-                                  >
-                                    <Edit className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => deleteTaskExamItem(item.id)}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setEditingTaskExam(editingTaskExam === item.id ? null : item.id)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => deleteTaskExamItem(item.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <h5 className="font-semibold text-sm text-muted-foreground">BENTUK PENILAIAN</h5>
+                              <p className="text-sm mt-1">{item.bentukPenilaian}</p>
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-sm text-muted-foreground">SUB-CPMK</h5>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {item.subCpmk.map((subcpmk: string, idx: number) => (
+                                  <Badge key={idx} variant="secondary" className="text-xs">
+                                    {subcpmk}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h5 className="font-semibold text-sm text-muted-foreground">DESKRIPSI PENILAIAN</h5>
+                            <p className="text-sm mt-1">{item.deskripsiPenilaian}</p>
+                          </div>
+                          
+                          <div>
+                            <h5 className="font-semibold text-sm text-muted-foreground">METODE PENILAIAN</h5>
+                            <p className="text-sm mt-1">{item.metodePenilaian}</p>
+                          </div>
+                          
+                          <div>
+                            <h5 className="font-semibold text-sm text-muted-foreground">BENTUK DAN FORMAT LUARAN</h5>
+                            <p className="text-sm mt-1">{item.bentukFormatLuaran}</p>
+                          </div>
+                          
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <h5 className="font-semibold text-sm text-muted-foreground">JADWAL PELAKSANAAN</h5>
+                              <p className="text-sm mt-1">{item.jadwalPelaksanaan}</p>
+                            </div>
+                            <div>
+                              <h5 className="font-semibold text-sm text-muted-foreground">INDIKATOR, KRITERIA</h5>
+                              <p className="text-sm mt-1">{item.indikatorKriteria}</p>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h5 className="font-semibold text-sm text-muted-foreground">PUSTAKA</h5>
+                            <p className="text-sm mt-1">{item.pustaka}</p>
+                          </div>
+                          
+                          <div>
+                            <h5 className="font-semibold text-sm text-muted-foreground">LAIN-LAIN</h5>
+                            <p className="text-sm mt-1">{item.lainLain}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                   
                   {/* Summary */}
@@ -1438,13 +1440,13 @@ const CourseRPS = () => {
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-primary">Total Bobot Penilaian</h4>
                       <Badge 
-                        variant={taskExamPlan.reduce((sum, item) => sum + item.bobotPersen, 0) === 100 ? "default" : "destructive"}
+                        variant={taskExamPlan.reduce((sum, item) => sum + item.bobotPenilaian, 0) === 100 ? "default" : "destructive"}
                         className="text-lg px-4 py-2"
                       >
-                        {taskExamPlan.reduce((sum, item) => sum + item.bobotPersen, 0)}%
+                        {taskExamPlan.reduce((sum, item) => sum + item.bobotPenilaian, 0)}%
                       </Badge>
                     </div>
-                    {taskExamPlan.reduce((sum, item) => sum + item.bobotPersen, 0) !== 100 && (
+                    {taskExamPlan.reduce((sum, item) => sum + item.bobotPenilaian, 0) !== 100 && (
                       <p className="text-sm text-muted-foreground mt-2">
                         ⚠️ Total bobot penilaian harus 100%
                       </p>
