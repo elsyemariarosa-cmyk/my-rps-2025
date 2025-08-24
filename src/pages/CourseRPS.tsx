@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,21 +38,31 @@ const CourseRPS = () => {
     { id: 5, code: "Sub-CPMK-5", description: "Mampu mengkomunikasikan hasil pembelajaran secara efektif." }
   ]);
 
-  // Learning activities state
-  const [learningActivities, setLearningActivities] = useState([
-    {
-      id: 1,
-      week: 1,
-      subCpmk: "Sub-CPMK-1",
-      indicator: "Mampu menyampaikan ide, menunjukkan etika, melaksanakan program, menyusun laporan, dll",
-      assessmentCriteria: "Kriteria penilaian seperti diambil dari mana? seperti: kriteria penilaian, rubrik nilai, rekognisi portofolio, dll",
-      assessmentTechnique: "Teknik penilaian yang digunakan, seperti: kuis, penyelesaian kasus, presentasi, review jurnal, dll",
-      offlineLearning: "Kontrak Kuliah, tutorial dan Simulasi, tugas 1, diskusi, studi kasus, kelas, dll",
-      onlineLearning: "Perkuliahan melalui Ms Teams, Penugasan melalui MyKlass, perkuliahan",
-      learningMaterials: "Kontrak Kuliah, Teknik fasilitasi, pemberdayaan masyarakat",
-      assessmentWeight: "20%"
-    }
-  ]);
+  // Learning activities state - automatically generated from Sub-CPMK
+  const [learningActivities, setLearningActivities] = useState<any[]>([]);
+
+  // Update learning activities when Sub-CPMK changes
+  const updateLearningActivitiesFromSubCpmk = () => {
+    const activities = subCpmkItems.map((subCpmk, index) => ({
+      id: subCpmk.id,
+      week: index + 1,
+      subCpmk: subCpmk.code,
+      subCpmkDescription: subCpmk.description,
+      indicator: "",
+      assessmentCriteria: "",
+      assessmentTechnique: "",
+      offlineLearning: "",
+      onlineLearning: "",
+      learningMaterials: "",
+      assessmentWeight: ""
+    }));
+    setLearningActivities(activities);
+  };
+
+  // Initialize learning activities from Sub-CPMK
+  useEffect(() => {
+    updateLearningActivitiesFromSubCpmk();
+  }, [subCpmkItems]);
   
   // Editing states
   const [editingCpl, setEditingCpl] = useState<number | null>(null);
@@ -134,7 +144,8 @@ const CourseRPS = () => {
   const addSubCpmkItem = () => {
     if (subCpmkForm.code && subCpmkForm.description) {
       const newId = Math.max(...subCpmkItems.map(item => item.id)) + 1;
-      setSubCpmkItems([...subCpmkItems, { id: newId, code: subCpmkForm.code, description: subCpmkForm.description }]);
+      const newSubCpmk = { id: newId, code: subCpmkForm.code, description: subCpmkForm.description };
+      setSubCpmkItems([...subCpmkItems, newSubCpmk]);
       setSubCpmkForm({ code: "", description: "" });
       setNewSubCpmkDialog(false);
       toast({ title: "Sub-CPMK berhasil ditambahkan", description: "Item Sub-CPMK baru telah disimpan." });
@@ -682,129 +693,14 @@ const CourseRPS = () => {
             <TabsContent value="rencana">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
-                      Rencana Kegiatan Pembelajaran
-                    </div>
-                    <Dialog open={newActivityDialog} onOpenChange={setNewActivityDialog}>
-                      <DialogTrigger asChild>
-                        <Button size="sm" className="gap-2">
-                          <Plus className="h-4 w-4" />
-                          Tambah Kegiatan
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>Tambah Kegiatan Pembelajaran Baru</DialogTitle>
-                          <DialogDescription>
-                            Masukkan detail kegiatan pembelajaran sesuai template RPS.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-sm font-medium">Minggu ke</label>
-                            <Input
-                              type="number"
-                              value={activityForm.week}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, week: parseInt(e.target.value) || 1 }))}
-                              min="1"
-                              max="16"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">Sub-CPMK</label>
-                            <Select 
-                              value={activityForm.subCpmk} 
-                              onValueChange={(value) => setActivityForm(prev => ({ ...prev, subCpmk: value }))}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Pilih Sub-CPMK" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {subCpmkItems.map((item) => (
-                                  <SelectItem key={item.id} value={item.code}>
-                                    {item.code} - {item.description.substring(0, 50)}...
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="col-span-2">
-                            <label className="text-sm font-medium">Indikator</label>
-                            <Textarea
-                              value={activityForm.indicator}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, indicator: e.target.value }))}
-                              placeholder="Masukkan indikator pembelajaran..."
-                              rows={2}
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">Kriteria Penilaian</label>
-                            <Textarea
-                              value={activityForm.assessmentCriteria}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, assessmentCriteria: e.target.value }))}
-                              placeholder="Kriteria penilaian..."
-                              rows={2}
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">Teknik Penilaian</label>
-                            <Textarea
-                              value={activityForm.assessmentTechnique}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, assessmentTechnique: e.target.value }))}
-                              placeholder="Teknik penilaian..."
-                              rows={2}
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">Pembelajaran Luring</label>
-                            <Textarea
-                              value={activityForm.offlineLearning}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, offlineLearning: e.target.value }))}
-                              placeholder="Strategi pembelajaran luring..."
-                              rows={2}
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">Pembelajaran Daring</label>
-                            <Textarea
-                              value={activityForm.onlineLearning}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, onlineLearning: e.target.value }))}
-                              placeholder="Strategi pembelajaran daring..."
-                              rows={2}
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">Materi Pembelajaran</label>
-                            <Textarea
-                              value={activityForm.learningMaterials}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, learningMaterials: e.target.value }))}
-                              placeholder="Materi dan pustaka..."
-                              rows={2}
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">Bobot Penilaian (%)</label>
-                            <Input
-                              value={activityForm.assessmentWeight}
-                              onChange={(e) => setActivityForm(prev => ({ ...prev, assessmentWeight: e.target.value }))}
-                              placeholder="Contoh: 20%"
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => setNewActivityDialog(false)}>
-                            Batal
-                          </Button>
-                          <Button onClick={addLearningActivity}>
-                            <Save className="h-4 w-4 mr-2" />
-                            Simpan
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Rencana Kegiatan Pembelajaran
                   </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Kegiatan pembelajaran otomatis dibuat berdasarkan Sub-CPMK yang telah didefinisikan. 
+                    Silakan lengkapi detail untuk setiap kegiatan.
+                  </p>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
@@ -826,44 +722,15 @@ const CourseRPS = () => {
                         {learningActivities.map((activity) => (
                           <TableRow key={activity.id}>
                             <TableCell className="text-center font-medium">
-                              {editingActivity === activity.id ? (
-                                <Input
-                                  type="number"
-                                  defaultValue={activity.week}
-                                  onChange={(e) => activity.week = parseInt(e.target.value) || 1}
-                                  className="w-16 text-center"
-                                  min="1"
-                                  max="16"
-                                />
-                              ) : (
-                                activity.week
-                              )}
+                              {activity.week}
                             </TableCell>
                             <TableCell>
-                              {editingActivity === activity.id ? (
-                                <Select 
-                                  defaultValue={activity.subCpmk}
-                                  onValueChange={(value) => activity.subCpmk = value}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {subCpmkItems.map((item) => (
-                                      <SelectItem key={item.id} value={item.code}>
-                                        {item.code}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              ) : (
-                                <div className="text-sm">
-                                  <Badge variant="secondary" className="mb-1">{activity.subCpmk}</Badge>
-                                  <div className="text-xs text-muted-foreground">
-                                    {subCpmkItems.find(item => item.code === activity.subCpmk)?.description.substring(0, 60)}...
-                                  </div>
+                              <div className="space-y-2">
+                                <Badge variant="secondary" className="mb-1">{activity.subCpmk}</Badge>
+                                <div className="text-xs text-muted-foreground">
+                                  {activity.subCpmkDescription}
                                 </div>
-                              )}
+                              </div>
                             </TableCell>
                             <TableCell>
                               {editingActivity === activity.id ? (
@@ -871,9 +738,12 @@ const CourseRPS = () => {
                                   defaultValue={activity.indicator}
                                   onChange={(e) => activity.indicator = e.target.value}
                                   rows={3}
+                                  placeholder="Masukkan indikator pembelajaran..."
                                 />
                               ) : (
-                                <div className="text-sm">{activity.indicator}</div>
+                                <div className="text-sm">
+                                  {activity.indicator || <span className="text-muted-foreground italic">Klik edit untuk menambahkan indikator</span>}
+                                </div>
                               )}
                             </TableCell>
                             <TableCell>
@@ -882,20 +752,28 @@ const CourseRPS = () => {
                                   <Textarea
                                     defaultValue={activity.assessmentCriteria}
                                     onChange={(e) => activity.assessmentCriteria = e.target.value}
-                                    placeholder="Kriteria"
+                                    placeholder="Kriteria penilaian..."
                                     rows={2}
                                   />
                                   <Textarea
                                     defaultValue={activity.assessmentTechnique}
                                     onChange={(e) => activity.assessmentTechnique = e.target.value}
-                                    placeholder="Teknik"
+                                    placeholder="Teknik penilaian..."
                                     rows={2}
                                   />
                                 </div>
                               ) : (
                                 <div className="text-sm space-y-2">
-                                  <div><strong>Kriteria:</strong> {activity.assessmentCriteria}</div>
-                                  <div><strong>Teknik:</strong> {activity.assessmentTechnique}</div>
+                                  {activity.assessmentCriteria ? (
+                                    <div><strong>Kriteria:</strong> {activity.assessmentCriteria}</div>
+                                  ) : (
+                                    <div className="text-muted-foreground italic">Klik edit untuk menambahkan kriteria</div>
+                                  )}
+                                  {activity.assessmentTechnique ? (
+                                    <div><strong>Teknik:</strong> {activity.assessmentTechnique}</div>
+                                  ) : (
+                                    <div className="text-muted-foreground italic">Klik edit untuk menambahkan teknik</div>
+                                  )}
                                 </div>
                               )}
                             </TableCell>
@@ -905,9 +783,12 @@ const CourseRPS = () => {
                                   defaultValue={activity.offlineLearning}
                                   onChange={(e) => activity.offlineLearning = e.target.value}
                                   rows={3}
+                                  placeholder="Strategi pembelajaran luring..."
                                 />
                               ) : (
-                                <div className="text-sm">{activity.offlineLearning}</div>
+                                <div className="text-sm">
+                                  {activity.offlineLearning || <span className="text-muted-foreground italic">Klik edit untuk menambahkan strategi luring</span>}
+                                </div>
                               )}
                             </TableCell>
                             <TableCell>
@@ -916,9 +797,12 @@ const CourseRPS = () => {
                                   defaultValue={activity.onlineLearning}
                                   onChange={(e) => activity.onlineLearning = e.target.value}
                                   rows={3}
+                                  placeholder="Strategi pembelajaran daring..."
                                 />
                               ) : (
-                                <div className="text-sm">{activity.onlineLearning}</div>
+                                <div className="text-sm">
+                                  {activity.onlineLearning || <span className="text-muted-foreground italic">Klik edit untuk menambahkan strategi daring</span>}
+                                </div>
                               )}
                             </TableCell>
                             <TableCell>
@@ -927,9 +811,12 @@ const CourseRPS = () => {
                                   defaultValue={activity.learningMaterials}
                                   onChange={(e) => activity.learningMaterials = e.target.value}
                                   rows={3}
+                                  placeholder="Materi dan pustaka..."
                                 />
                               ) : (
-                                <div className="text-sm">{activity.learningMaterials}</div>
+                                <div className="text-sm">
+                                  {activity.learningMaterials || <span className="text-muted-foreground italic">Klik edit untuk menambahkan materi</span>}
+                                </div>
                               )}
                             </TableCell>
                             <TableCell className="text-center">
@@ -938,9 +825,14 @@ const CourseRPS = () => {
                                   defaultValue={activity.assessmentWeight}
                                   onChange={(e) => activity.assessmentWeight = e.target.value}
                                   className="w-16 text-center"
+                                  placeholder="20%"
                                 />
                               ) : (
-                                <Badge variant="outline">{activity.assessmentWeight}</Badge>
+                                activity.assessmentWeight ? (
+                                  <Badge variant="outline">{activity.assessmentWeight}</Badge>
+                                ) : (
+                                  <span className="text-muted-foreground italic text-xs">Edit</span>
+                                )
                               )}
                             </TableCell>
                             <TableCell>
@@ -961,22 +853,13 @@ const CourseRPS = () => {
                                   </Button>
                                 </div>
                               ) : (
-                                <div className="flex flex-col gap-1">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => setEditingActivity(activity.id)}
-                                  >
-                                    <Edit className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => deleteLearningActivity(activity.id)}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => setEditingActivity(activity.id)}
+                                >
+                                  <Edit className="h-3 w-3" />
+                                </Button>
                               )}
                             </TableCell>
                           </TableRow>
@@ -984,6 +867,13 @@ const CourseRPS = () => {
                       </TableBody>
                     </Table>
                   </div>
+                  {learningActivities.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>Belum ada kegiatan pembelajaran.</p>
+                      <p className="text-sm">Tambahkan Sub-CPMK terlebih dahulu untuk membuat kegiatan pembelajaran otomatis.</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
