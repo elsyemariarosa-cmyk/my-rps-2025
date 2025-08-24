@@ -20,8 +20,18 @@ const CourseRPS = () => {
   // Course information state
   const [courseInfo, setCourseInfo] = useState({
     penanggungJawab: "",
-    tahunAjaran: "20../20.."
+    tahunAjaran: "20../20..",
+    deskripsiSingkat: "",
+    manfaatMataKuliah: []
   });
+  
+  // Editing states for course info
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [editingBenefits, setEditingBenefits] = useState(false);
+  
+  // Temporary form states for editing
+  const [tempDescription, setTempDescription] = useState("");
+  const [tempBenefits, setTempBenefits] = useState("");
   
   // State for editable content
   const [cplItems, setCplItems] = useState([
@@ -412,19 +422,132 @@ const CourseRPS = () => {
                   </div>
                   
                   <div>
-                    <h4 className="font-semibold mb-2">Deskripsi Singkat</h4>
-                    <p className="text-muted-foreground">
-                      Mata kuliah ini memberikan pemahaman komprehensif tentang konsep dan praktik dalam bidang {course.name.toLowerCase()}, 
-                      dengan fokus pada pengembangan kompetensi yang sesuai dengan kebutuhan industri kesehatan modern.
-                    </p>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold">Deskripsi Singkat</h4>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          if (editingDescription) {
+                            setCourseInfo({...courseInfo, deskripsiSingkat: tempDescription});
+                            setEditingDescription(false);
+                            toast({ title: "Deskripsi berhasil diperbarui", description: "Perubahan telah disimpan." });
+                          } else {
+                            setTempDescription(courseInfo.deskripsiSingkat || `Mata kuliah ini memberikan pemahaman komprehensif tentang konsep dan praktik dalam bidang ${course.name.toLowerCase()}, dengan fokus pada pengembangan kompetensi yang sesuai dengan kebutuhan industri kesehatan modern.`);
+                            setEditingDescription(true);
+                          }
+                        }}
+                      >
+                        {editingDescription ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    {editingDescription ? (
+                      <div className="space-y-2">
+                        <Textarea
+                          value={tempDescription}
+                          onChange={(e) => setTempDescription(e.target.value)}
+                          rows={4}
+                          className="bg-white"
+                          placeholder="Masukkan deskripsi singkat mata kuliah..."
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setCourseInfo({...courseInfo, deskripsiSingkat: tempDescription});
+                              setEditingDescription(false);
+                              toast({ title: "Deskripsi berhasil diperbarui", description: "Perubahan telah disimpan." });
+                            }}
+                          >
+                            <Save className="h-4 w-4 mr-1" />
+                            Simpan
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingDescription(false)}
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Batal
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground">
+                        {courseInfo.deskripsiSingkat || `Mata kuliah ini memberikan pemahaman komprehensif tentang konsep dan praktik dalam bidang ${course.name.toLowerCase()}, dengan fokus pada pengembangan kompetensi yang sesuai dengan kebutuhan industri kesehatan modern.`}
+                      </p>
+                    )}
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-2">Manfaat Mata Kuliah</h4>
-                    <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                      <li>Mengembangkan pemahaman teoritis dan praktis</li>
-                      <li>Meningkatkan kemampuan analisis dan problem solving</li>
-                      <li>Mempersiapkan mahasiswa untuk dunia kerja profesional</li>
-                    </ul>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold">Manfaat Mata Kuliah</h4>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          if (editingBenefits) {
+                            const benefitsArray = tempBenefits.split('\n').filter(item => item.trim());
+                            setCourseInfo({...courseInfo, manfaatMataKuliah: benefitsArray});
+                            setEditingBenefits(false);
+                            toast({ title: "Manfaat mata kuliah berhasil diperbarui", description: "Perubahan telah disimpan." });
+                          } else {
+                            const currentBenefits = courseInfo.manfaatMataKuliah.length > 0 
+                              ? courseInfo.manfaatMataKuliah.join('\n')
+                              : "Mengembangkan pemahaman teoritis dan praktis\nMeningkatkan kemampuan analisis dan problem solving\nMempersiapkan mahasiswa untuk dunia kerja profesional";
+                            setTempBenefits(currentBenefits);
+                            setEditingBenefits(true);
+                          }
+                        }}
+                      >
+                        {editingBenefits ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    {editingBenefits ? (
+                      <div className="space-y-2">
+                        <Textarea
+                          value={tempBenefits}
+                          onChange={(e) => setTempBenefits(e.target.value)}
+                          rows={6}
+                          className="bg-white"
+                          placeholder="Masukkan manfaat mata kuliah (satu per baris)..."
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Tip: Tulis satu manfaat per baris untuk membuat daftar
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              const benefitsArray = tempBenefits.split('\n').filter(item => item.trim());
+                              setCourseInfo({...courseInfo, manfaatMataKuliah: benefitsArray});
+                              setEditingBenefits(false);
+                              toast({ title: "Manfaat mata kuliah berhasil diperbarui", description: "Perubahan telah disimpan." });
+                            }}
+                          >
+                            <Save className="h-4 w-4 mr-1" />
+                            Simpan
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingBenefits(false)}
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Batal
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                        {(courseInfo.manfaatMataKuliah.length > 0 ? courseInfo.manfaatMataKuliah : [
+                          "Mengembangkan pemahaman teoritis dan praktis",
+                          "Meningkatkan kemampuan analisis dan problem solving", 
+                          "Mempersiapkan mahasiswa untuk dunia kerja profesional"
+                        ]).map((benefit, index) => (
+                          <li key={index}>{benefit}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </CardContent>
               </Card>
