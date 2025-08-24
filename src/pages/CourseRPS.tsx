@@ -17,6 +17,12 @@ const CourseRPS = () => {
   const { semester, courseSlug } = useParams();
   const { toast } = useToast();
   
+  // Course information state
+  const [courseInfo, setCourseInfo] = useState({
+    penanggungJawab: "",
+    tahunAjaran: "20../20.."
+  });
+  
   // State for editable content
   const [cplItems, setCplItems] = useState([
     { id: 1, title: "CPL-1: Sikap dan Tata Nilai", description: "Menunjukkan sikap bertakwa kepada Tuhan Yang Maha Esa dan mampu menunjukkan sikap religius, berjiwa Pancasila, dan berkepribadian Indonesia." },
@@ -308,6 +314,22 @@ const CourseRPS = () => {
             <p className="text-white/90 text-lg">
               Rencana Pembelajaran Semester - {semesterName}
             </p>
+            {(courseInfo.penanggungJawab || courseInfo.tahunAjaran !== "20../20..") && (
+              <div className="mt-4 flex flex-wrap gap-4 text-sm">
+                {courseInfo.penanggungJawab && (
+                  <div className="bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
+                    <span className="text-white/80">PJ: </span>
+                    <span className="text-white font-medium">{courseInfo.penanggungJawab}</span>
+                  </div>
+                )}
+                {courseInfo.tahunAjaran !== "20../20.." && (
+                  <div className="bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
+                    <span className="text-white/80">TA: </span>
+                    <span className="text-white font-medium">{courseInfo.tahunAjaran}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -359,7 +381,36 @@ const CourseRPS = () => {
                     Deskripsi Mata Kuliah
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
+                  {/* Course Information */}
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <h4 className="font-semibold mb-4 text-primary">Informasi Mata Kuliah</h4>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-semibold text-muted-foreground mb-2 block">
+                          Nama Penanggung Jawab
+                        </label>
+                        <Input
+                          value={courseInfo.penanggungJawab}
+                          onChange={(e) => setCourseInfo({...courseInfo, penanggungJawab: e.target.value})}
+                          placeholder="Masukkan nama penanggung jawab mata kuliah"
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-semibold text-muted-foreground mb-2 block">
+                          Tahun Ajaran
+                        </label>
+                        <Input
+                          value={courseInfo.tahunAjaran}
+                          onChange={(e) => setCourseInfo({...courseInfo, tahunAjaran: e.target.value})}
+                          placeholder="Contoh: 2024/2025"
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div>
                     <h4 className="font-semibold mb-2">Deskripsi Singkat</h4>
                     <p className="text-muted-foreground">

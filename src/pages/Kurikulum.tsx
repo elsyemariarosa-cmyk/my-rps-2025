@@ -10,12 +10,12 @@ const Kurikulum = () => {
       totalSKS: 15,
       color: "bg-blue-50 border-blue-200",
       courses: [
-        { name: "Literasi Digital Akademik", sks: 1, icon: <Laptop className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Manajemen Pelayanan RS", sks: 4, icon: <Building className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Pengantar Manajemen Keuangan", sks: 2, icon: <Calculator className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Digitalisasi RS", sks: 2, icon: <Laptop className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Metodologi Penelitian Pelayanan Kesehatan", sks: 4, icon: <Search className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Manajemen Keuangan RS", sks: 2, icon: <Calculator className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." }
+        { name: "Literasi Digital Akademik", sks: 1, icon: <Laptop className="h-4 w-4" /> },
+        { name: "Manajemen Pelayanan RS", sks: 4, icon: <Building className="h-4 w-4" /> },
+        { name: "Pengantar Manajemen Keuangan", sks: 2, icon: <Calculator className="h-4 w-4" /> },
+        { name: "Digitalisasi RS", sks: 2, icon: <Laptop className="h-4 w-4" /> },
+        { name: "Metodologi Penelitian Pelayanan Kesehatan", sks: 4, icon: <Search className="h-4 w-4" /> },
+        { name: "Manajemen Keuangan RS", sks: 2, icon: <Calculator className="h-4 w-4" /> }
       ]
     },
     {
@@ -23,13 +23,13 @@ const Kurikulum = () => {
       totalSKS: 22,
       color: "bg-purple-50 border-purple-200",
       courses: [
-        { name: "Manajemen SDM, Perilaku dan Kepemimpinan RS", sks: 3, icon: <Users className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Manajemen Pencegahan dan Pengendalian Infeksi RS", sks: 2, icon: <Microscope className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Pemberdayaan Masyarakat Kesehatan", sks: 4, icon: <Globe className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Manajemen Pemasaran Jasa Kesehatan", sks: 2, icon: <TrendingUp className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Manajemen Pelayanan Khusus RS", sks: 2, icon: <Heart className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Manajemen Strategik RS", sks: 3, icon: <Building className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Publikasi Ilmiah", sks: 6, icon: <FileText className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." }
+        { name: "Manajemen SDM, Perilaku dan Kepemimpinan RS", sks: 3, icon: <Users className="h-4 w-4" /> },
+        { name: "Manajemen Pencegahan dan Pengendalian Infeksi RS", sks: 2, icon: <Microscope className="h-4 w-4" /> },
+        { name: "Pemberdayaan Masyarakat Kesehatan", sks: 4, icon: <Globe className="h-4 w-4" /> },
+        { name: "Manajemen Pemasaran Jasa Kesehatan", sks: 2, icon: <TrendingUp className="h-4 w-4" /> },
+        { name: "Manajemen Pelayanan Khusus RS", sks: 2, icon: <Heart className="h-4 w-4" /> },
+        { name: "Manajemen Strategik RS", sks: 3, icon: <Building className="h-4 w-4" /> },
+        { name: "Publikasi Ilmiah", sks: 6, icon: <FileText className="h-4 w-4" /> }
       ]
     },
     {
@@ -37,9 +37,9 @@ const Kurikulum = () => {
       totalSKS: 17,
       color: "bg-yellow-50 border-yellow-200",
       courses: [
-        { name: "Blok Elektif", sks: 2, icon: <BookOpen className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Residensi", sks: 3, icon: <Stethoscope className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." },
-        { name: "Tesis", sks: 12, icon: <GraduationCap className="h-4 w-4" />, penanggungJawab: "", tahunAjaran: "20../20.." }
+        { name: "Blok Elektif", sks: 2, icon: <BookOpen className="h-4 w-4" /> },
+        { name: "Residensi", sks: 3, icon: <Stethoscope className="h-4 w-4" /> },
+        { name: "Tesis", sks: 12, icon: <GraduationCap className="h-4 w-4" /> }
       ]
     }
   ];
@@ -112,7 +112,7 @@ const Kurikulum = () => {
                         }`}
                       >
                         <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3 flex-1">
                               <div className={`p-2.5 rounded-xl ${
                                 semesterIndex === 0 ? 'bg-blue-200 text-blue-700' :
@@ -122,7 +122,7 @@ const Kurikulum = () => {
                                 {course.icon}
                               </div>
                               <div className="flex-1">
-                                <h3 className="font-semibold text-foreground text-sm leading-tight group-hover:text-primary transition-colors mb-1">
+                                <h3 className="font-semibold text-foreground text-sm leading-tight group-hover:text-primary transition-colors">
                                   {course.name}
                                 </h3>
                               </div>
@@ -137,18 +137,6 @@ const Kurikulum = () => {
                             >
                               {course.sks} SKS
                             </Badge>
-                          </div>
-                          
-                          {/* Additional Course Information */}
-                          <div className="space-y-1 text-xs text-muted-foreground pl-12">
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium">Penanggung Jawab:</span>
-                              <span className="italic">{course.penanggungJawab || "Belum diisi"}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium">Tahun Ajaran:</span>
-                              <span className="italic">{course.tahunAjaran}</span>
-                            </div>
                           </div>
                         </CardContent>
                       </Card>
