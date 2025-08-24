@@ -36,6 +36,13 @@ const Header = () => {
             >
               Beranda
             </Link>
+
+            <Link 
+              to="/kurikulum" 
+              className="text-foreground hover:text-primary transition-colors font-medium"
+            >
+              Kurikulum
+            </Link>
             
             {/* RPS Dropdown */}
             <div className="relative">
