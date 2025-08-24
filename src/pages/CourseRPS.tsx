@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BookOpen, Target, ListChecks, GitBranch, Calendar, CheckCircle, BarChart3, BookMarked, Plus, Edit, Trash2, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,19 +36,48 @@ const CourseRPS = () => {
     { id: 4, code: "Sub-CPMK-4", description: "Mampu mengintegrasikan pengetahuan dengan praktik profesional." },
     { id: 5, code: "Sub-CPMK-5", description: "Mampu mengkomunikasikan hasil pembelajaran secara efektif." }
   ]);
+
+  // Learning activities state
+  const [learningActivities, setLearningActivities] = useState([
+    {
+      id: 1,
+      week: 1,
+      subCpmk: "Sub-CPMK-1",
+      indicator: "Mampu menyampaikan ide, menunjukkan etika, melaksanakan program, menyusun laporan, dll",
+      assessmentCriteria: "Kriteria penilaian seperti diambil dari mana? seperti: kriteria penilaian, rubrik nilai, rekognisi portofolio, dll",
+      assessmentTechnique: "Teknik penilaian yang digunakan, seperti: kuis, penyelesaian kasus, presentasi, review jurnal, dll",
+      offlineLearning: "Kontrak Kuliah, tutorial dan Simulasi, tugas 1, diskusi, studi kasus, kelas, dll",
+      onlineLearning: "Perkuliahan melalui Ms Teams, Penugasan melalui MyKlass, perkuliahan",
+      learningMaterials: "Kontrak Kuliah, Teknik fasilitasi, pemberdayaan masyarakat",
+      assessmentWeight: "20%"
+    }
+  ]);
   
   // Editing states
   const [editingCpl, setEditingCpl] = useState<number | null>(null);
   const [editingCpmk, setEditingCpmk] = useState<number | null>(null);
   const [editingSubCpmk, setEditingSubCpmk] = useState<number | null>(null);
+  const [editingActivity, setEditingActivity] = useState<number | null>(null);
   const [newCplDialog, setNewCplDialog] = useState(false);
   const [newCpmkDialog, setNewCpmkDialog] = useState(false);
   const [newSubCpmkDialog, setNewSubCpmkDialog] = useState(false);
+  const [newActivityDialog, setNewActivityDialog] = useState(false);
   
   // Form states
   const [cplForm, setCplForm] = useState({ title: "", description: "" });
   const [cpmkForm, setCpmkForm] = useState({ title: "", description: "" });
   const [subCpmkForm, setSubCpmkForm] = useState({ code: "", description: "" });
+  const [activityForm, setActivityForm] = useState({
+    week: 1,
+    subCpmk: "",
+    indicator: "",
+    assessmentCriteria: "",
+    assessmentTechnique: "",
+    offlineLearning: "",
+    onlineLearning: "",
+    learningMaterials: "",
+    assessmentWeight: ""
+  });
 
   // Helper functions
   const addCplItem = () => {
@@ -119,6 +149,41 @@ const CourseRPS = () => {
   const deleteSubCpmkItem = (id: number) => {
     setSubCpmkItems(subCpmkItems.filter(item => item.id !== id));
     toast({ title: "Sub-CPMK berhasil dihapus", description: "Item Sub-CPMK telah dihapus." });
+  };
+
+  // Learning activities helper functions
+  const addLearningActivity = () => {
+    if (activityForm.subCpmk && activityForm.indicator) {
+      const newId = Math.max(...learningActivities.map(item => item.id), 0) + 1;
+      setLearningActivities([...learningActivities, { 
+        id: newId, 
+        ...activityForm 
+      }]);
+      setActivityForm({
+        week: learningActivities.length + 2,
+        subCpmk: "",
+        indicator: "",
+        assessmentCriteria: "",
+        assessmentTechnique: "",
+        offlineLearning: "",
+        onlineLearning: "",
+        learningMaterials: "",
+        assessmentWeight: ""
+      });
+      setNewActivityDialog(false);
+      toast({ title: "Kegiatan pembelajaran berhasil ditambahkan", description: "Item kegiatan pembelajaran baru telah disimpan." });
+    }
+  };
+
+  const updateLearningActivity = (id: number, data: any) => {
+    setLearningActivities(learningActivities.map(item => item.id === id ? { ...item, ...data } : item));
+    setEditingActivity(null);
+    toast({ title: "Kegiatan pembelajaran berhasil diperbarui", description: "Perubahan telah disimpan." });
+  };
+
+  const deleteLearningActivity = (id: number) => {
+    setLearningActivities(learningActivities.filter(item => item.id !== id));
+    toast({ title: "Kegiatan pembelajaran berhasil dihapus", description: "Item kegiatan pembelajaran telah dihapus." });
   };
   
   // Course data mapping
@@ -616,27 +681,281 @@ const CourseRPS = () => {
             <TabsContent value="rencana">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    Rencana Kegiatan Pembelajaran
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5" />
+                      Rencana Kegiatan Pembelajaran
+                    </div>
+                    <Dialog open={newActivityDialog} onOpenChange={setNewActivityDialog}>
+                      <DialogTrigger asChild>
+                        <Button size="sm" className="gap-2">
+                          <Plus className="h-4 w-4" />
+                          Tambah Kegiatan
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Tambah Kegiatan Pembelajaran Baru</DialogTitle>
+                          <DialogDescription>
+                            Masukkan detail kegiatan pembelajaran sesuai template RPS.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium">Minggu ke</label>
+                            <Input
+                              type="number"
+                              value={activityForm.week}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, week: parseInt(e.target.value) || 1 }))}
+                              min="1"
+                              max="16"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium">Sub-CPMK</label>
+                            <Input
+                              value={activityForm.subCpmk}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, subCpmk: e.target.value }))}
+                              placeholder="Contoh: Sub-CPMK-1"
+                            />
+                          </div>
+                          <div className="col-span-2">
+                            <label className="text-sm font-medium">Indikator</label>
+                            <Textarea
+                              value={activityForm.indicator}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, indicator: e.target.value }))}
+                              placeholder="Masukkan indikator pembelajaran..."
+                              rows={2}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium">Kriteria Penilaian</label>
+                            <Textarea
+                              value={activityForm.assessmentCriteria}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, assessmentCriteria: e.target.value }))}
+                              placeholder="Kriteria penilaian..."
+                              rows={2}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium">Teknik Penilaian</label>
+                            <Textarea
+                              value={activityForm.assessmentTechnique}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, assessmentTechnique: e.target.value }))}
+                              placeholder="Teknik penilaian..."
+                              rows={2}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium">Pembelajaran Luring</label>
+                            <Textarea
+                              value={activityForm.offlineLearning}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, offlineLearning: e.target.value }))}
+                              placeholder="Strategi pembelajaran luring..."
+                              rows={2}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium">Pembelajaran Daring</label>
+                            <Textarea
+                              value={activityForm.onlineLearning}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, onlineLearning: e.target.value }))}
+                              placeholder="Strategi pembelajaran daring..."
+                              rows={2}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium">Materi Pembelajaran</label>
+                            <Textarea
+                              value={activityForm.learningMaterials}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, learningMaterials: e.target.value }))}
+                              placeholder="Materi dan pustaka..."
+                              rows={2}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium">Bobot Penilaian (%)</label>
+                            <Input
+                              value={activityForm.assessmentWeight}
+                              onChange={(e) => setActivityForm(prev => ({ ...prev, assessmentWeight: e.target.value }))}
+                              placeholder="Contoh: 20%"
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setNewActivityDialog(false)}>
+                            Batal
+                          </Button>
+                          <Button onClick={addLearningActivity}>
+                            <Save className="h-4 w-4 mr-2" />
+                            Simpan
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {Array.from({ length: 16 }, (_, i) => (
-                      <div key={i} className="p-4 border rounded-lg">
-                        <div className="flex items-center gap-4 mb-2">
-                          <Badge variant="secondary">Minggu {i + 1}</Badge>
-                          <h4 className="font-semibold">Topik Pembelajaran {i + 1}</h4>
-                        </div>
-                        <p className="text-muted-foreground text-sm mb-2">
-                          Pembahasan mengenai aspek penting dari {course.name.toLowerCase()}.
-                        </p>
-                        <div className="text-xs text-muted-foreground">
-                          <span className="font-medium">Metode:</span> Ceramah, Diskusi, Studi Kasus
-                        </div>
-                      </div>
-                    ))}
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-16 text-center">Minggu ke (1)</TableHead>
+                          <TableHead className="min-w-40">Kemampuan akhir tiap tahapan belajar (Sub-CPMK) (2)</TableHead>
+                          <TableHead className="min-w-40">Indikator (3)</TableHead>
+                          <TableHead className="min-w-40">Penilaian Kriteria & Teknik (4)</TableHead>
+                          <TableHead className="min-w-40">Bentuk/Strategi Pembelajaran [Estimasi Waktu] Luring (5)</TableHead>
+                          <TableHead className="min-w-40">Daring (6)</TableHead>
+                          <TableHead className="min-w-40">Materi Pembelajaran [Pustaka] (7)</TableHead>
+                          <TableHead className="w-20 text-center">Bobot Penilaian (%) (8)</TableHead>
+                          <TableHead className="w-20">Aksi</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {learningActivities.map((activity) => (
+                          <TableRow key={activity.id}>
+                            <TableCell className="text-center font-medium">
+                              {editingActivity === activity.id ? (
+                                <Input
+                                  type="number"
+                                  defaultValue={activity.week}
+                                  onChange={(e) => activity.week = parseInt(e.target.value) || 1}
+                                  className="w-16 text-center"
+                                  min="1"
+                                  max="16"
+                                />
+                              ) : (
+                                activity.week
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingActivity === activity.id ? (
+                                <Input
+                                  defaultValue={activity.subCpmk}
+                                  onChange={(e) => activity.subCpmk = e.target.value}
+                                />
+                              ) : (
+                                <div className="text-sm">{activity.subCpmk}</div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingActivity === activity.id ? (
+                                <Textarea
+                                  defaultValue={activity.indicator}
+                                  onChange={(e) => activity.indicator = e.target.value}
+                                  rows={3}
+                                />
+                              ) : (
+                                <div className="text-sm">{activity.indicator}</div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingActivity === activity.id ? (
+                                <div className="space-y-2">
+                                  <Textarea
+                                    defaultValue={activity.assessmentCriteria}
+                                    onChange={(e) => activity.assessmentCriteria = e.target.value}
+                                    placeholder="Kriteria"
+                                    rows={2}
+                                  />
+                                  <Textarea
+                                    defaultValue={activity.assessmentTechnique}
+                                    onChange={(e) => activity.assessmentTechnique = e.target.value}
+                                    placeholder="Teknik"
+                                    rows={2}
+                                  />
+                                </div>
+                              ) : (
+                                <div className="text-sm space-y-2">
+                                  <div><strong>Kriteria:</strong> {activity.assessmentCriteria}</div>
+                                  <div><strong>Teknik:</strong> {activity.assessmentTechnique}</div>
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingActivity === activity.id ? (
+                                <Textarea
+                                  defaultValue={activity.offlineLearning}
+                                  onChange={(e) => activity.offlineLearning = e.target.value}
+                                  rows={3}
+                                />
+                              ) : (
+                                <div className="text-sm">{activity.offlineLearning}</div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingActivity === activity.id ? (
+                                <Textarea
+                                  defaultValue={activity.onlineLearning}
+                                  onChange={(e) => activity.onlineLearning = e.target.value}
+                                  rows={3}
+                                />
+                              ) : (
+                                <div className="text-sm">{activity.onlineLearning}</div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingActivity === activity.id ? (
+                                <Textarea
+                                  defaultValue={activity.learningMaterials}
+                                  onChange={(e) => activity.learningMaterials = e.target.value}
+                                  rows={3}
+                                />
+                              ) : (
+                                <div className="text-sm">{activity.learningMaterials}</div>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {editingActivity === activity.id ? (
+                                <Input
+                                  defaultValue={activity.assessmentWeight}
+                                  onChange={(e) => activity.assessmentWeight = e.target.value}
+                                  className="w-16 text-center"
+                                />
+                              ) : (
+                                <Badge variant="outline">{activity.assessmentWeight}</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {editingActivity === activity.id ? (
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => updateLearningActivity(activity.id, activity)}
+                                  >
+                                    <Save className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setEditingActivity(null)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setEditingActivity(activity.id)}
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => deleteLearningActivity(activity.id)}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   </div>
                 </CardContent>
               </Card>
