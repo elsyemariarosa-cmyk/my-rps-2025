@@ -67,90 +67,86 @@ const Kurikulum = () => {
       </section>
 
       {/* Visual Curriculum Map */}
-      <section className="py-12 bg-gradient-to-br from-slate-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="container mx-auto px-4">
-          <div className="relative">
-            {/* Path Lines */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-full max-w-6xl">
-                {/* Horizontal path line */}
-                <div className="absolute top-1/2 left-0 right-0 h-2 bg-gradient-to-r from-blue-300 via-purple-300 to-yellow-300 rounded-full transform -translate-y-1/2 opacity-50"></div>
-                {/* Semester connection nodes */}
-                <div className="absolute top-1/2 left-1/6 w-6 h-6 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-lg"></div>
-                <div className="absolute top-1/2 left-1/2 w-6 h-6 bg-purple-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-lg"></div>
-                <div className="absolute top-1/2 left-5/6 w-6 h-6 bg-yellow-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-lg"></div>
+          <div className="relative max-w-7xl mx-auto">
+            {/* Connection Path */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-full max-w-5xl">
+                <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-yellow-400 rounded-full transform -translate-y-1/2 opacity-60"></div>
+                <div className="absolute top-1/2 left-1/6 w-4 h-4 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-md"></div>
+                <div className="absolute top-1/2 left-1/2 w-4 h-4 bg-purple-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-md"></div>
+                <div className="absolute top-1/2 left-5/6 w-4 h-4 bg-yellow-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-md"></div>
               </div>
             </div>
 
-            {/* Semester Islands */}
-            <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            {/* Semester Sections */}
+            <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
               {semesterData.map((semester, semesterIndex) => (
-                <div key={semesterIndex} className="relative">
-                  {/* Semester Header */}
-                  <div className="text-center mb-6">
-                    <div className={`inline-block px-6 py-3 rounded-full text-white font-bold text-lg shadow-lg ${
-                      semesterIndex === 0 ? 'bg-blue-500' : 
-                      semesterIndex === 1 ? 'bg-purple-500' : 'bg-yellow-500'
+                <div key={semesterIndex} className="relative animate-fade-in" style={{ animationDelay: `${semesterIndex * 0.2}s` }}>
+                  {/* Semester Badge */}
+                  <div className="text-center mb-8">
+                    <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold text-lg shadow-lg ${
+                      semesterIndex === 0 ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 
+                      semesterIndex === 1 ? 'bg-gradient-to-r from-purple-500 to-purple-600' : 
+                      'bg-gradient-to-r from-yellow-500 to-yellow-600'
                     }`}>
-                      {semester.semester}
+                      <span>{semester.semester}</span>
                     </div>
-                    <div className="mt-2">
-                      <Badge variant="secondary" className="text-lg px-4 py-2">
-                        {semester.totalSKS} SKS
+                    <div className="mt-3">
+                      <Badge variant="secondary" className="text-base px-4 py-1 font-semibold">
+                        Total: {semester.totalSKS} SKS
                       </Badge>
                     </div>
                   </div>
 
-                  {/* Course Islands */}
-                  <div className="space-y-4">
+                  {/* Course Cards */}
+                  <div className="space-y-3">
                     {semester.courses.map((course, courseIndex) => (
                       <Card
                         key={courseIndex}
-                        className={`relative transform hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl ${
-                          semesterIndex === 0 ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' :
-                          semesterIndex === 1 ? 'bg-purple-50 border-purple-200 hover:bg-purple-100' :
-                          'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'
+                        className={`relative group hover-scale cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 ${
+                          semesterIndex === 0 ? 'bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150' :
+                          semesterIndex === 1 ? 'bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150' :
+                          'bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200 hover:from-yellow-100 hover:to-yellow-150'
                         }`}
                       >
                         <CardContent className="p-4">
-                          <div className="flex items-start justify-between mb-2">
-                            <div className={`p-2 rounded-lg ${
-                              semesterIndex === 0 ? 'bg-blue-100 text-blue-700' :
-                              semesterIndex === 1 ? 'bg-purple-100 text-purple-700' :
-                              'bg-yellow-100 text-yellow-700'
-                            }`}>
-                              {course.icon}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3 flex-1">
+                              <div className={`p-2.5 rounded-xl ${
+                                semesterIndex === 0 ? 'bg-blue-200 text-blue-700' :
+                                semesterIndex === 1 ? 'bg-purple-200 text-purple-700' :
+                                'bg-yellow-200 text-yellow-700'
+                              }`}>
+                                {course.icon}
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-foreground text-sm leading-tight group-hover:text-primary transition-colors">
+                                  {course.name}
+                                </h3>
+                              </div>
                             </div>
                             <Badge 
                               variant="outline" 
-                              className={`${
-                                semesterIndex === 0 ? 'border-blue-300 text-blue-700' :
-                                semesterIndex === 1 ? 'border-purple-300 text-purple-700' :
-                                'border-yellow-600 text-yellow-700'
+                              className={`ml-3 font-semibold ${
+                                semesterIndex === 0 ? 'border-blue-400 text-blue-700 bg-blue-50' :
+                                semesterIndex === 1 ? 'border-purple-400 text-purple-700 bg-purple-50' :
+                                'border-yellow-500 text-yellow-700 bg-yellow-50'
                               }`}
                             >
                               {course.sks} SKS
                             </Badge>
                           </div>
-                          <h3 className="font-semibold text-foreground text-sm leading-tight">
-                            {course.name}
-                          </h3>
                         </CardContent>
-                        
-                        {/* Course connection indicator */}
-                        <div className={`absolute -top-1 -left-1 w-3 h-3 rounded-full ${
-                          semesterIndex === 0 ? 'bg-blue-400' :
-                          semesterIndex === 1 ? 'bg-purple-400' :
-                          'bg-yellow-400'
-                        }`}></div>
                       </Card>
                     ))}
                   </div>
 
-                  {/* Navigation arrows */}
+                  {/* Progress Arrow */}
                   {semesterIndex < 2 && (
-                    <div className="hidden lg:block absolute top-1/2 -right-6 transform -translate-y-1/2">
-                      <div className={`w-0 h-0 border-l-[12px] border-r-0 border-t-[8px] border-b-[8px] border-t-transparent border-b-transparent ${
+                    <div className="hidden lg:block absolute top-1/2 -right-8 transform -translate-y-1/2 animate-pulse">
+                      <div className={`w-0 h-0 border-l-[16px] border-r-0 border-t-[10px] border-b-[10px] border-t-transparent border-b-transparent ${
                         semesterIndex === 0 ? 'border-l-purple-400' : 'border-l-yellow-400'
                       }`}></div>
                     </div>
@@ -159,22 +155,22 @@ const Kurikulum = () => {
               ))}
             </div>
 
-            {/* Map Legend */}
-            <div className="mt-12 flex justify-center">
-              <Card className="bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-center gap-8 text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-                      <span>Semester 1: Fondasi</span>
+            {/* Legend */}
+            <div className="mt-16 flex justify-center">
+              <Card className="bg-white/90 backdrop-blur-sm shadow-lg">
+                <CardContent className="px-8 py-6">
+                  <div className="flex items-center justify-center gap-12 text-sm font-medium">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-sm"></div>
+                      <span className="text-slate-700">Semester 1: Fondasi</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
-                      <span>Semester 2: Pendalaman</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-sm"></div>
+                      <span className="text-slate-700">Semester 2: Pendalaman</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-                      <span>Semester 3: Spesialisasi</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full shadow-sm"></div>
+                      <span className="text-slate-700">Semester 3: Spesialisasi</span>
                     </div>
                   </div>
                 </CardContent>
