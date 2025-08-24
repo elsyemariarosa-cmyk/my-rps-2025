@@ -22,12 +22,18 @@ const CourseRPS = () => {
     penanggungJawab: "",
     tahunAjaran: "20../20..",
     deskripsiSingkat: "",
-    manfaatMataKuliah: []
+    manfaatMataKuliah: [],
+    namaMataKuliah: "",
+    kodeMataKuliah: "",
+    sksMataKuliah: 0,
+    semesterMataKuliah: "",
+    dosenPengampu: ["", "", ""]
   });
   
   // Editing states for course info
   const [editingDescription, setEditingDescription] = useState(false);
   const [editingBenefits, setEditingBenefits] = useState(false);
+  const [editingCourseHeader, setEditingCourseHeader] = useState(false);
   
   // Temporary form states for editing
   const [tempDescription, setTempDescription] = useState("");
@@ -373,6 +379,19 @@ const CourseRPS = () => {
   }
 
   const semesterName = semester?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+  // Initialize course info when course data is available
+  useEffect(() => {
+    if (course) {
+      setCourseInfo(prev => ({
+        ...prev,
+        namaMataKuliah: course.name,
+        kodeMataKuliah: course.code,
+        sksMataKuliah: course.sks,
+        semesterMataKuliah: semesterName || ""
+      }));
+    }
+  }, [course, semesterName]);
 
   return (
     <Layout>
@@ -1309,22 +1328,105 @@ const CourseRPS = () => {
                           <tbody>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 w-48">MATA KULIAH</td>
-                              <td className="p-3">...</td>
+                              <td className="p-3">
+                                {editingCourseHeader ? (
+                                  <Input
+                                    value={courseInfo.namaMataKuliah}
+                                    onChange={(e) => setCourseInfo({...courseInfo, namaMataKuliah: e.target.value})}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <span className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingCourseHeader(true)}>
+                                    {courseInfo.namaMataKuliah || "Klik untuk mengisi..."}
+                                  </span>
+                                )}
+                              </td>
                               <td className="p-3 font-semibold bg-gray-100 w-20">SKS</td>
-                              <td className="p-3">...</td>
+                              <td className="p-3">
+                                {editingCourseHeader ? (
+                                  <Input
+                                    type="number"
+                                    value={courseInfo.sksMataKuliah}
+                                    onChange={(e) => setCourseInfo({...courseInfo, sksMataKuliah: parseInt(e.target.value) || 0})}
+                                    className="text-sm w-16"
+                                  />
+                                ) : (
+                                  <span className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingCourseHeader(true)}>
+                                    {courseInfo.sksMataKuliah || "..."}
+                                  </span>
+                                )}
+                              </td>
                               <td className="p-3 font-semibold bg-gray-100 w-24">SEMESTER</td>
-                              <td className="p-3">...</td>
+                              <td className="p-3">
+                                {editingCourseHeader ? (
+                                  <Input
+                                    value={courseInfo.semesterMataKuliah}
+                                    onChange={(e) => setCourseInfo({...courseInfo, semesterMataKuliah: e.target.value})}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <span className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingCourseHeader(true)}>
+                                    {courseInfo.semesterMataKuliah || "..."}
+                                  </span>
+                                )}
+                              </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100">KODE</td>
-                              <td className="p-3" colSpan={5}>...</td>
+                              <td className="p-3" colSpan={5}>
+                                {editingCourseHeader ? (
+                                  <Input
+                                    value={courseInfo.kodeMataKuliah}
+                                    onChange={(e) => setCourseInfo({...courseInfo, kodeMataKuliah: e.target.value})}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <span className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingCourseHeader(true)}>
+                                    {courseInfo.kodeMataKuliah || "Klik untuk mengisi..."}
+                                  </span>
+                                )}
+                              </td>
                             </tr>
                             <tr>
                               <td className="p-3 font-semibold bg-gray-100">DOSEN PENGAMPU</td>
                               <td className="p-3" colSpan={5}>
-                                1.<br/>
-                                2.<br/>
-                                3.
+                                {editingCourseHeader ? (
+                                  <div className="space-y-2">
+                                    {courseInfo.dosenPengampu.map((dosen, idx) => (
+                                      <div key={idx} className="flex items-center gap-2">
+                                        <span className="w-4">{idx + 1}.</span>
+                                        <Input
+                                          value={dosen}
+                                          onChange={(e) => {
+                                            const newDosen = [...courseInfo.dosenPengampu];
+                                            newDosen[idx] = e.target.value;
+                                            setCourseInfo({...courseInfo, dosenPengampu: newDosen});
+                                          }}
+                                          placeholder={`Nama dosen ${idx + 1}`}
+                                          className="text-sm"
+                                        />
+                                      </div>
+                                    ))}
+                                    <div className="flex gap-2 mt-3">
+                                      <Button size="sm" onClick={() => setEditingCourseHeader(false)}>
+                                        <Save className="h-3 w-3 mr-1" />
+                                        Simpan
+                                      </Button>
+                                      <Button size="sm" variant="outline" onClick={() => setEditingCourseHeader(false)}>
+                                        <X className="h-3 w-3 mr-1" />
+                                        Batal
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingCourseHeader(true)}>
+                                    {courseInfo.dosenPengampu.map((dosen, idx) => (
+                                      <div key={idx}>
+                                        {idx + 1}. {dosen || "Klik untuk mengisi..."}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </td>
                             </tr>
                           </tbody>
@@ -1337,71 +1439,211 @@ const CourseRPS = () => {
                           <tbody>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 w-48 align-top">BENTUK PENILAIAN</td>
-                              <td className="p-3">{item.bentukPenilaian}</td>
+                              <td className="p-3">
+                                {editingTaskExam === item.id ? (
+                                  <Textarea
+                                    defaultValue={item.bentukPenilaian}
+                                    onChange={(e) => item.bentukPenilaian = e.target.value}
+                                    rows={2}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <span className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded block" onClick={() => setEditingTaskExam(item.id)}>
+                                    {item.bentukPenilaian || "Klik untuk mengisi..."}
+                                  </span>
+                                )}
+                              </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 align-top">JUDUL PENILAIAN</td>
-                              <td className="p-3">{item.judulPenilaian}</td>
+                              <td className="p-3">
+                                {editingTaskExam === item.id ? (
+                                  <Input
+                                    defaultValue={item.judulPenilaian}
+                                    onChange={(e) => item.judulPenilaian = e.target.value}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <span className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded block" onClick={() => setEditingTaskExam(item.id)}>
+                                    {item.judulPenilaian || "Klik untuk mengisi..."}
+                                  </span>
+                                )}
+                              </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 align-top">SUB-CPMK</td>
                               <td className="p-3">
-                                {item.subCpmk.map((subcpmk: string, idx: number) => (
-                                  <div key={idx}>{subcpmk}{idx < item.subCpmk.length - 1 ? ',' : ''}</div>
-                                ))}
+                                {editingTaskExam === item.id ? (
+                                  <div className="flex flex-wrap gap-2">
+                                    {subCpmkItems.map((subCpmk) => (
+                                      <div key={subCpmk.id} className="flex items-center space-x-2">
+                                        <input
+                                          type="checkbox"
+                                          id={`edit-subcpmk-${item.id}-${subCpmk.id}`}
+                                          checked={item.subCpmk.includes(subCpmk.code)}
+                                          onChange={(e) => {
+                                            if (e.target.checked) {
+                                              item.subCpmk = [...item.subCpmk, subCpmk.code];
+                                            } else {
+                                              item.subCpmk = item.subCpmk.filter((code: string) => code !== subCpmk.code);
+                                            }
+                                          }}
+                                        />
+                                        <label htmlFor={`edit-subcpmk-${item.id}-${subCpmk.id}`} className="text-sm">
+                                          {subCpmk.code}
+                                        </label>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingTaskExam(item.id)}>
+                                    {item.subCpmk.length > 0 ? item.subCpmk.map((subcpmk: string, idx: number) => (
+                                      <div key={idx}>{subcpmk}{idx < item.subCpmk.length - 1 ? ',' : ''}</div>
+                                    )) : "Klik untuk memilih Sub-CPMK..."}
+                                  </div>
+                                )}
                               </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 align-top">DESKRIPSI PENILAIAN</td>
                               <td className="p-3">
-                                Contoh:<br/>
-                                <u>{item.judulPenilaian.split(':')[0]}</u> {item.deskripsiPenilaian}
+                                {editingTaskExam === item.id ? (
+                                  <Textarea
+                                    defaultValue={item.deskripsiPenilaian}
+                                    onChange={(e) => item.deskripsiPenilaian = e.target.value}
+                                    rows={3}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <div className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingTaskExam(item.id)}>
+                                    Contoh:<br/>
+                                    <u>{item.judulPenilaian.split(':')[0]}</u> {item.deskripsiPenilaian || "Klik untuk mengisi deskripsi..."}
+                                  </div>
+                                )}
                               </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 align-top">METODE PENILAIAN</td>
                               <td className="p-3">
-                                Contoh:<br/>
-                                <div className="ml-4">
-                                  1. {item.metodePenilaian.split('.')[0] || item.metodePenilaian}<br/>
-                                  2. waktu pengerjaan 60 menit<br/>
-                                  3. Nilai langsung keluar setelah selesai mengerjakan
-                                </div>
+                                {editingTaskExam === item.id ? (
+                                  <Textarea
+                                    defaultValue={item.metodePenilaian}
+                                    onChange={(e) => item.metodePenilaian = e.target.value}
+                                    rows={3}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <div className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingTaskExam(item.id)}>
+                                    Contoh:<br/>
+                                    <div className="ml-4">
+                                      1. {item.metodePenilaian.split('.')[0] || item.metodePenilaian || "Klik untuk mengisi metode..."}<br/>
+                                      2. waktu pengerjaan 60 menit<br/>
+                                      3. Nilai langsung keluar setelah selesai mengerjakan
+                                    </div>
+                                  </div>
+                                )}
                               </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 align-top">BENTUK DAN FORMAT LUARAN</td>
                               <td className="p-3">
-                                Contoh:<br/>
-                                {item.bentukFormatLuaran}
+                                {editingTaskExam === item.id ? (
+                                  <Textarea
+                                    defaultValue={item.bentukFormatLuaran}
+                                    onChange={(e) => item.bentukFormatLuaran = e.target.value}
+                                    rows={2}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <div className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingTaskExam(item.id)}>
+                                    Contoh:<br/>
+                                    {item.bentukFormatLuaran || "Klik untuk mengisi format luaran..."}
+                                  </div>
+                                )}
                               </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 align-top">INDIKATOR, KRITERIA, DAN BOBOT PENILAIAN</td>
                               <td className="p-3">
-                                Contoh:<br/>
-                                Indikator: {item.indikatorKriteria} ({item.bobotPenilaian}%)
+                                {editingTaskExam === item.id ? (
+                                  <div className="space-y-2">
+                                    <Input
+                                      defaultValue={item.indikatorKriteria}
+                                      onChange={(e) => item.indikatorKriteria = e.target.value}
+                                      placeholder="Indikator dan kriteria"
+                                      className="text-sm"
+                                    />
+                                    <Input
+                                      type="number"
+                                      defaultValue={item.bobotPenilaian}
+                                      onChange={(e) => item.bobotPenilaian = parseInt(e.target.value) || 0}
+                                      placeholder="Bobot penilaian (%)"
+                                      className="text-sm w-32"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingTaskExam(item.id)}>
+                                    Contoh:<br/>
+                                    Indikator: {item.indikatorKriteria || "Klik untuk mengisi..."} ({item.bobotPenilaian}%)
+                                  </div>
+                                )}
                               </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 align-top">JADWAL PELAKSANAAN</td>
-                              <td className="p-3">{item.jadwalPelaksanaan}</td>
+                              <td className="p-3">
+                                {editingTaskExam === item.id ? (
+                                  <Input
+                                    defaultValue={item.jadwalPelaksanaan}
+                                    onChange={(e) => item.jadwalPelaksanaan = e.target.value}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <span className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded block" onClick={() => setEditingTaskExam(item.id)}>
+                                    {item.jadwalPelaksanaan || "Klik untuk mengisi jadwal..."}
+                                  </span>
+                                )}
+                              </td>
                             </tr>
                             <tr className="border-b">
                               <td className="p-3 font-semibold bg-gray-100 align-top">PUSTAKA</td>
                               <td className="p-3">
-                                Contoh:<br/>
-                                <div className="ml-4">
-                                  - {item.pustaka.split(',')[0] || item.pustaka}<br/>
-                                  - buku....<br/>
-                                  - video...<br/>
-                                  - dll
-                                </div>
+                                {editingTaskExam === item.id ? (
+                                  <Textarea
+                                    defaultValue={item.pustaka}
+                                    onChange={(e) => item.pustaka = e.target.value}
+                                    rows={3}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <div className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded" onClick={() => setEditingTaskExam(item.id)}>
+                                    Contoh:<br/>
+                                    <div className="ml-4">
+                                      - {item.pustaka.split(',')[0] || item.pustaka || "Klik untuk mengisi pustaka..."}<br/>
+                                      - buku....<br/>
+                                      - video...<br/>
+                                      - dll
+                                    </div>
+                                  </div>
+                                )}
                               </td>
                             </tr>
                             <tr>
                               <td className="p-3 font-semibold bg-gray-100 align-top">LAIN - LAIN</td>
-                              <td className="p-3">{item.lainLain}</td>
+                              <td className="p-3">
+                                {editingTaskExam === item.id ? (
+                                  <Textarea
+                                    defaultValue={item.lainLain}
+                                    onChange={(e) => item.lainLain = e.target.value}
+                                    rows={2}
+                                    className="text-sm"
+                                  />
+                                ) : (
+                                  <span className="cursor-pointer hover:bg-yellow-100 px-2 py-1 rounded block" onClick={() => setEditingTaskExam(item.id)}>
+                                    {item.lainLain || "Klik untuk mengisi catatan tambahan..."}
+                                  </span>
+                                )}
+                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -1409,20 +1651,45 @@ const CourseRPS = () => {
 
                       {/* Action Buttons */}
                       <div className="p-3 bg-muted/10 flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setEditingTaskExam(editingTaskExam === item.id ? null : item.id)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => deleteTaskExamItem(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {editingTaskExam === item.id ? (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                updateTaskExamItem(item.id, item);
+                                setEditingTaskExam(null);
+                              }}
+                            >
+                              <Save className="h-4 w-4 mr-1" />
+                              Simpan
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setEditingTaskExam(null)}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Batal
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setEditingTaskExam(item.id)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => deleteTaskExamItem(item.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
