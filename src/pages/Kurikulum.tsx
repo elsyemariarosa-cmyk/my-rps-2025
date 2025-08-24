@@ -163,7 +163,6 @@ const Kurikulum = () => {
             <div className="mt-12 flex justify-center">
               <Card className="bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <h4 className="font-bold text-center mb-4">Peta Perjalanan Akademik</h4>
                   <div className="flex items-center justify-center gap-8 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
