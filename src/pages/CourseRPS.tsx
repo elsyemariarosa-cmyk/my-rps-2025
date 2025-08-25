@@ -10,8 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Target, ListChecks, GitBranch, Calendar, CheckCircle, BarChart3, BookMarked, Plus, Edit, Trash2, Save, X } from "lucide-react";
+import { BookOpen, Target, ListChecks, GitBranch, Calendar, CheckCircle, BarChart3, BookMarked, Plus, Edit, Trash2, Save, X, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import * as XLSX from 'xlsx';
 
 const CourseRPS = () => {
   const { semester, courseSlug } = useParams();
@@ -338,6 +339,131 @@ const CourseRPS = () => {
     setTaskExamPlan(taskExamPlan.filter(item => item.id !== id));
     toast({ title: "Rencana penilaian berhasil dihapus", description: "Item penilaian telah dihapus." });
   };
+
+  // Excel export function
+  const exportToExcel = () => {
+    const workbook = XLSX.utils.book_new();
+
+    // Course Information Sheet
+    const courseInfoData = [
+      ['INFORMASI MATA KULIAH'],
+      ['Fakultas', 'Fakultas Kedokteran dan Ilmu Kesehatan'],
+      ['Program Studi', 'Prodi Magister Administrasi Rumah Sakit'],
+      ['Nama Mata Kuliah', courseInfo.namaMataKuliah],
+      ['Kode Mata Kuliah', courseInfo.kodeMataKuliah],  
+      ['SKS', courseInfo.sksMataKuliah.toString()],
+      ['Semester', courseInfo.semesterMataKuliah],
+      ['Penanggung Jawab', courseInfo.penanggungJawab],
+      ['Tahun Ajaran', courseInfo.tahunAjaran],
+      ['Dosen Pengampu 1', courseInfo.dosenPengampu[0] || ''],
+      ['Dosen Pengampu 2', courseInfo.dosenPengampu[1] || ''],
+      ['Dosen Pengampu 3', courseInfo.dosenPengampu[2] || ''],
+      [''],
+      ['DESKRIPSI MATA KULIAH'],
+      [courseInfo.deskripsiSingkat],
+      [''],
+      ['MANFAAT MATA KULIAH'],
+      ...courseInfo.manfaatMataKuliah.map(manfaat => [manfaat])
+    ];
+    const courseInfoSheet = XLSX.utils.aoa_to_sheet(courseInfoData);
+    XLSX.utils.book_append_sheet(workbook, courseInfoSheet, 'Informasi Mata Kuliah');
+
+    // CPL Sheet
+    const cplData = [
+      ['CAPAIAN PEMBELAJARAN LULUSAN (CPL)'],
+      ['No', 'Kode CPL', 'Deskripsi'],
+      ...cplItems.map((item, index) => [index + 1, item.title, item.description])
+    ];
+    const cplSheet = XLSX.utils.aoa_to_sheet(cplData);
+    XLSX.utils.book_append_sheet(workbook, cplSheet, 'CPL');
+
+    // CPMK Sheet
+    const cpmkData = [
+      ['CAPAIAN PEMBELAJARAN MATA KULIAH (CPMK)'],
+      ['No', 'Kode CPMK', 'Deskripsi'],
+      ...cpmkItems.map((item, index) => [index + 1, item.title, item.description])
+    ];
+    const cpmkSheet = XLSX.utils.aoa_to_sheet(cpmkData);
+    XLSX.utils.book_append_sheet(workbook, cpmkSheet, 'CPMK');
+
+    // Sub-CPMK Sheet
+    const subCpmkData = [
+      ['SUB-CAPAIAN PEMBELAJARAN MATA KULIAH (SUB-CPMK)'],
+      ['No', 'Kode Sub-CPMK', 'Deskripsi'],
+      ...subCpmkItems.map((item, index) => [index + 1, item.code, item.description])
+    ];
+    const subCpmkSheet = XLSX.utils.aoa_to_sheet(subCpmkData);
+    XLSX.utils.book_append_sheet(workbook, subCpmkSheet, 'Sub-CPMK');
+
+    // Learning Activities Sheet
+    const learningActivitiesData = [
+      ['RENCANA KEGIATAN PEMBELAJARAN'],
+      ['Minggu', 'Sub-CPMK', 'Deskripsi Sub-CPMK', 'Indikator', 'Kriteria Penilaian', 'Teknik Penilaian', 'Pembelajaran Luring', 'Pembelajaran Daring', 'Materi Pembelajaran', 'Bobot Penilaian'],
+      ...learningActivities.map(activity => [
+        activity.week,
+        activity.subCpmk,
+        activity.subCpmkDescription || '',
+        activity.indicator || '',
+        activity.assessmentCriteria || '',
+        activity.assessmentTechnique || '',
+        activity.offlineLearning || '',
+        activity.onlineLearning || '',
+        activity.learningMaterials || '',
+        activity.assessmentWeight || ''
+      ])
+    ];
+    const learningActivitiesSheet = XLSX.utils.aoa_to_sheet(learningActivitiesData);
+    XLSX.utils.book_append_sheet(workbook, learningActivitiesSheet, 'Rencana Kegiatan');
+
+    // Assessment Plan Sheet
+    const assessmentPlanData = [
+      ['RENCANA PENILAIAN'],
+      ['Minggu', 'CPL', 'CPMK', 'Sub-CPMK', 'Indikator', 'Bentuk Penilaian', 'Bobot CPMK'],
+      ...assessmentPlan.map(plan => [
+        plan.week || '',
+        plan.cpl || '',
+        plan.cpmk || '',
+        plan.subCpmkList?.map((sub: any) => sub.code).join(', ') || '',
+        plan.indicator || '',
+        plan.assessmentForm || '',
+        plan.cpmkWeight || ''
+      ])
+    ];
+    const assessmentPlanSheet = XLSX.utils.aoa_to_sheet(assessmentPlanData);
+    XLSX.utils.book_append_sheet(workbook, assessmentPlanSheet, 'Rencana Penilaian');
+
+    // Task/Exam Assessment Sheet
+    const taskExamData = [
+      ['RENCANA PENILAIAN TUGAS/UJIAN'],
+      ['Judul Penilaian', 'Bentuk Penilaian', 'Sub-CPMK', 'Deskripsi', 'Metode Penilaian', 'Format Luaran', 'Indikator Kriteria', 'Bobot (%)', 'Jadwal', 'Pustaka', 'Lain-lain'],
+      ...taskExamPlan.map(task => [
+        task.judulPenilaian || '',
+        task.bentukPenilaian || '',
+        Array.isArray(task.subCpmk) ? task.subCpmk.join(', ') : task.subCpmk || '',
+        task.deskripsiPenilaian || '',
+        task.metodePenilaian || '',
+        task.bentukFormatLuaran || '',
+        task.indikatorKriteria || '',
+        task.bobotPenilaian || '',
+        task.jadwalPelaksanaan || '',
+        task.pustaka || '',
+        task.lainLain || ''
+      ])
+    ];
+    const taskExamSheet = XLSX.utils.aoa_to_sheet(taskExamData);
+    XLSX.utils.book_append_sheet(workbook, taskExamSheet, 'Penilaian Tugas Ujian');
+
+    // Generate filename with course code and name
+    const filename = `RPS_${courseInfo.kodeMataKuliah}_${courseInfo.namaMataKuliah.replace(/\s+/g, '_')}.xlsx`;
+    
+    // Save the file
+    XLSX.writeFile(workbook, filename);
+    
+    toast({ 
+      title: "Excel berhasil diunduh", 
+      description: `File ${filename} telah disimpan.` 
+    });
+  };
   
   // Course data mapping
   const courseData: Record<string, Record<string, { name: string; sks: number; code: string }>> = {
@@ -399,16 +525,26 @@ const CourseRPS = () => {
       <section className="bg-gradient-to-r from-primary to-primary-foreground text-white">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                <BookOpen className="h-8 w-8" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
+                  <BookOpen className="h-8 w-8" />
+                </div>
+                <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                  {course.code}
+                </Badge>
+                <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                  {course.sks} SKS
+                </Badge>
               </div>
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                {course.code}
-              </Badge>
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                {course.sks} SKS
-              </Badge>
+              <Button 
+                onClick={exportToExcel}
+                variant="secondary" 
+                className="bg-white/20 text-white border-white/30 hover:bg-white/30"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Excel
+              </Button>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-2">
               {course.name}
