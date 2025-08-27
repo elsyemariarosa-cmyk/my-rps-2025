@@ -40,12 +40,21 @@ const CourseRPS = () => {
   const [tempDescription, setTempDescription] = useState("");
   const [tempBenefits, setTempBenefits] = useState("");
   
-  // State for editable content
-  const [cplItems, setCplItems] = useState([
-    { id: 1, title: "CPL-1: Sikap dan Tata Nilai", description: "Menunjukkan sikap bertakwa kepada Tuhan Yang Maha Esa dan mampu menunjukkan sikap religius, berjiwa Pancasila, dan berkepribadian Indonesia." },
-    { id: 2, title: "CPL-2: Penguasaan Pengetahuan", description: "Menguasai konsep teoritis dan praktis dalam bidang manajemen dan administrasi rumah sakit." },
-    { id: 3, title: "CPL-3: Keterampilan Khusus", description: "Mampu mengaplikasikan pengetahuan dan keterampilan dalam pengelolaan rumah sakit secara efektif." }
+  // State for editable content - MARS Program CPLs
+  const [marsCompleteData] = useState([
+    { id: 1, code: "PP-CPL1", title: "Penguasaan Pengetahuan", description: "Menguasai teori dan konsep manajemen, prinsip bisnis visioner serta pelayanan yang islami", bloomLevel: "C5", bgColor: "bg-yellow-200" },
+    { id: 2, code: "PP-CPL2", title: "Penguasaan Pengetahuan", description: "Mampu menganalisis faktor internal dan eksternal rumah sakit dengan menggunakan pendekatan Evidence Based Management Practice untuk suistanability organisasi", bloomLevel: "C4", bgColor: "bg-red-200" },
+    { id: 3, code: "KU-CPL3", title: "Keterampilan Umum", description: "Mampu menerapkan hasil kajian kritis dan kajian analisis untuk menyelesaikan masalah perumahsakitan dan proses pengambilan keputusan, melalui kolaborasi inter, multi dan trans-disiplin", bloomLevel: "P4 dan C4", bgColor: "bg-green-200" },
+    { id: 4, code: "KU-CPL4", title: "Keterampilan Umum", description: "Mampu mengintergrasikan inisiatif, argumen saintifik, data hasil penelitian, serta mampu mengkomunikasikan melalui berbagai media ilmiah", bloomLevel: "P5 dan C4", bgColor: "bg-green-100" },
+    { id: 5, code: "KK-CPL5", title: "Keterampilan Khusus", description: "Mampu menghasilkan nilai tambah dalam pengelolaan rumah sakit yang siap menuju smart hospital", bloomLevel: "C5 dan P4", bgColor: "bg-purple-200" },
+    { id: 6, code: "KK-CPL6", title: "Keterampilan Khusus", description: "Mampu mengembangkan pelayanan rumah sakit yang efektifitas dan efisiensi menggunakan pendekatan teknologi", bloomLevel: "C6 dan P4", bgColor: "bg-purple-300" }
   ]);
+  
+  // Selected CPLs for this course
+  const [selectedCplIds, setSelectedCplIds] = useState<number[]>([1, 2, 3]);
+  
+  // Get selected CPL items based on selectedCplIds
+  const cplItems = marsCompleteData.filter(cpl => selectedCplIds.includes(cpl.id));
   
   const [cpmkItems, setCpmkItems] = useState([
     { id: 1, title: "CPMK-1", description: "Mampu memahami dan menjelaskan konsep dasar mata kuliah ini.", borderColor: "border-primary", bgColor: "bg-primary/5" },
@@ -156,17 +165,14 @@ const CourseRPS = () => {
   };
   
   // Editing states
-  const [editingCpl, setEditingCpl] = useState<number | null>(null);
   const [editingCpmk, setEditingCpmk] = useState<number | null>(null);
   const [editingSubCpmk, setEditingSubCpmk] = useState<number | null>(null);
   const [editingActivity, setEditingActivity] = useState<number | null>(null);
-  const [newCplDialog, setNewCplDialog] = useState(false);
   const [newCpmkDialog, setNewCpmkDialog] = useState(false);
   const [newSubCpmkDialog, setNewSubCpmkDialog] = useState(false);
   const [newActivityDialog, setNewActivityDialog] = useState(false);
   
   // Form states
-  const [cplForm, setCplForm] = useState({ title: "", description: "" });
   const [cpmkForm, setCpmkForm] = useState({ title: "", description: "" });
   const [subCpmkForm, setSubCpmkForm] = useState({ code: "", description: "" });
   const [activityForm, setActivityForm] = useState({
@@ -195,26 +201,27 @@ const CourseRPS = () => {
     lainLain: ""
   });
 
-  // Helper functions
-  const addCplItem = () => {
-    if (cplForm.title && cplForm.description) {
-      const newId = Math.max(...cplItems.map(item => item.id)) + 1;
-      setCplItems([...cplItems, { id: newId, title: cplForm.title, description: cplForm.description }]);
-      setCplForm({ title: "", description: "" });
-      setNewCplDialog(false);
-      toast({ title: "CPL berhasil ditambahkan", description: "Item CPL baru telah disimpan." });
-    }
+  // Helper functions for CPL selection
+  const toggleCplSelection = (cplId: number) => {
+    setSelectedCplIds(prev => 
+      prev.includes(cplId) 
+        ? prev.filter(id => id !== cplId)
+        : [...prev, cplId]
+    );
+    toast({ 
+      title: "Pemilihan CPL diperbarui", 
+      description: `CPL ${selectedCplIds.includes(cplId) ? 'dihapus dari' : 'ditambahkan ke'} mata kuliah ini.` 
+    });
   };
 
-  const updateCplItem = (id: number, title: string, description: string) => {
-    setCplItems(cplItems.map(item => item.id === id ? { ...item, title, description } : item));
-    setEditingCpl(null);
-    toast({ title: "CPL berhasil diperbarui", description: "Perubahan telah disimpan." });
+  const selectAllCpl = () => {
+    setSelectedCplIds(marsCompleteData.map(cpl => cpl.id));
+    toast({ title: "Semua CPL dipilih", description: "Seluruh CPL telah ditambahkan ke mata kuliah ini." });
   };
 
-  const deleteCplItem = (id: number) => {
-    setCplItems(cplItems.filter(item => item.id !== id));
-    toast({ title: "CPL berhasil dihapus", description: "Item CPL telah dihapus." });
+  const deselectAllCpl = () => {
+    setSelectedCplIds([]);
+    toast({ title: "Semua CPL dibatalkan", description: "Seluruh CPL telah dihapus dari mata kuliah ini." });
   };
 
   const addCpmkItem = () => {
@@ -368,11 +375,22 @@ const CourseRPS = () => {
     const courseInfoSheet = XLSX.utils.aoa_to_sheet(courseInfoData);
     XLSX.utils.book_append_sheet(workbook, courseInfoSheet, 'Informasi Mata Kuliah');
 
-    // CPL Sheet
+    // CPL Sheet - Selected CPLs for this course
     const cplData = [
-      ['CAPAIAN PEMBELAJARAN LULUSAN (CPL)'],
-      ['No', 'Kode CPL', 'Deskripsi'],
-      ...cplItems.map((item, index) => [index + 1, item.title, item.description])
+      ['CAPAIAN PEMBELAJARAN LULUSAN (CPL) - TERPILIH UNTUK MATA KULIAH INI'],
+      ['No', 'Kode CPL', 'Kategori', 'Deskripsi', 'Level Taksonomi Bloom'],
+      ...cplItems.map((item, index) => [index + 1, item.code, item.title, item.description, item.bloomLevel]),
+      [''],
+      ['SEMUA CPL PROGRAM STUDI MARS'],
+      ['No', 'Kode CPL', 'Kategori', 'Deskripsi', 'Level Taksonomi Bloom', 'Status'],
+      ...marsCompleteData.map((item, index) => [
+        index + 1, 
+        item.code, 
+        item.title, 
+        item.description, 
+        item.bloomLevel,
+        selectedCplIds.includes(item.id) ? 'TERPILIH' : 'TIDAK TERPILIH'
+      ])
     ];
     const cplSheet = XLSX.utils.aoa_to_sheet(cplData);
     XLSX.utils.book_append_sheet(workbook, cplSheet, 'CPL');
@@ -791,115 +809,75 @@ const CourseRPS = () => {
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Target className="h-5 w-5" />
-                      Capaian Pembelajaran Lulusan (CPL)
+                      <span className="font-bold text-primary">Capaian Pembelajaran Lulusan (CPL)</span>
                     </div>
-                    <Dialog open={newCplDialog} onOpenChange={setNewCplDialog}>
-                      <DialogTrigger asChild>
-                        <Button size="sm" className="gap-2">
-                          <Plus className="h-4 w-4" />
-                          Tambah CPL
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Tambah CPL Baru</DialogTitle>
-                          <DialogDescription>
-                            Masukkan judul dan deskripsi untuk Capaian Pembelajaran Lulusan baru.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div>
-                            <label className="text-sm font-medium">Judul CPL</label>
-                            <Input
-                              value={cplForm.title}
-                              onChange={(e) => setCplForm(prev => ({ ...prev, title: e.target.value }))}
-                              placeholder="Contoh: CPL-4: Kemampuan Komunikasi"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium">Deskripsi CPL</label>
-                            <Textarea
-                              value={cplForm.description}
-                              onChange={(e) => setCplForm(prev => ({ ...prev, description: e.target.value }))}
-                              placeholder="Masukkan deskripsi lengkap CPL..."
-                              rows={3}
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => setNewCplDialog(false)}>
-                            Batal
-                          </Button>
-                          <Button onClick={addCplItem}>
-                            <Save className="h-4 w-4 mr-2" />
-                            Simpan
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={selectAllCpl}>
+                        Pilih Semua
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={deselectAllCpl}>
+                        Hapus Semua
+                      </Button>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {cplItems.map((item) => (
-                      <div key={item.id} className="p-4 bg-muted/50 rounded-lg">
-                        {editingCpl === item.id ? (
-                          <div className="space-y-3">
-                            <Input
-                              defaultValue={item.title}
-                              onChange={(e) => item.title = e.target.value}
-                              className="font-semibold"
-                            />
-                            <Textarea
-                              defaultValue={item.description}
-                              onChange={(e) => item.description = e.target.value}
-                              rows={3}
-                            />
-                            <div className="flex gap-2">
-                              <Button 
-                                size="sm" 
-                                onClick={() => updateCplItem(item.id, item.title, item.description)}
-                              >
-                                <Save className="h-4 w-4 mr-1" />
-                                Simpan
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                onClick={() => setEditingCpl(null)}
-                              >
-                                <X className="h-4 w-4 mr-1" />
-                                Batal
-                              </Button>
+                  <div className="mb-4 p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-semibold mb-2">Pilih CPL yang Relevan untuk Mata Kuliah Ini:</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Silakan pilih CPL dari Program Studi MARS yang sesuai dengan target pembelajaran mata kuliah ini.
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {marsCompleteData.map((cpl) => (
+                      <div key={cpl.id} className={`p-4 border-2 rounded-lg transition-all cursor-pointer ${
+                        selectedCplIds.includes(cpl.id) 
+                          ? 'border-primary bg-primary/5' 
+                          : 'border-border hover:border-primary/50'
+                      } ${cpl.bgColor}`}>
+                        <div className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedCplIds.includes(cpl.id)}
+                            onChange={() => toggleCplSelection(cpl.id)}
+                            className="mt-1 w-4 h-4 text-primary rounded focus:ring-primary"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-bold text-gray-800">
+                                {cpl.code} - {cpl.title}
+                              </h4>
+                              <Badge variant="outline" className="text-xs font-medium">
+                                Taksonomi: {cpl.bloomLevel}
+                              </Badge>
                             </div>
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                              {cpl.description}
+                            </p>
                           </div>
-                        ) : (
-                          <>
-                            <div className="flex items-start justify-between mb-2">
-                              <h4 className="font-semibold">{item.title}</h4>
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => setEditingCpl(item.id)}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => deleteCplItem(item.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                            <p className="text-muted-foreground text-sm">{item.description}</p>
-                          </>
-                        )}
+                        </div>
                       </div>
                     ))}
                   </div>
+                  
+                  {selectedCplIds.length > 0 && (
+                    <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                      <h4 className="font-semibold text-primary mb-2">
+                        CPL Terpilih untuk Mata Kuliah Ini ({selectedCplIds.length} dari {marsCompleteData.length})
+                      </h4>
+                      <div className="space-y-2">
+                        {cplItems.map((cpl) => (
+                          <div key={cpl.id} className="flex items-center gap-2 text-sm">
+                            <CheckCircle className="h-4 w-4 text-primary" />
+                            <span className="font-medium">{cpl.code}</span>
+                            <span className="text-muted-foreground">-</span>
+                            <span>{cpl.description}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
