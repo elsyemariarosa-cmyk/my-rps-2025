@@ -56,11 +56,85 @@ const CourseRPS = () => {
   // Get selected CPL items based on selectedCplIds
   const cplItems = marsCompleteData.filter(cpl => selectedCplIds.includes(cpl.id));
   
-  const [cpmkItems, setCpmkItems] = useState([
+  const [cpmkItems, setCpmkItems] = useState<Array<{
+    id: number;
+    title: string;
+    description: string;
+    borderColor: string;
+    bgColor: string;
+    relatedCpl?: string;
+  }>>([
     { id: 1, title: "CPMK-1", description: "Mampu memahami dan menjelaskan konsep dasar mata kuliah ini.", borderColor: "border-primary", bgColor: "bg-primary/5" },
     { id: 2, title: "CPMK-2", description: "Mampu menganalisis permasalahan dan memberikan solusi yang tepat.", borderColor: "border-secondary", bgColor: "bg-secondary/5" },
     { id: 3, title: "CPMK-3", description: "Mampu mengimplementasikan konsep dalam situasi nyata.", borderColor: "border-accent", bgColor: "bg-accent/5" }
   ]);
+
+  // Generate CPMK automatically based on selected CPL
+  const generateCpmkFromCpl = () => {
+    if (selectedCplIds.length === 0) return;
+    
+    const colors = [
+      { borderColor: "border-primary", bgColor: "bg-primary/5" },
+      { borderColor: "border-secondary", bgColor: "bg-secondary/5" },
+      { borderColor: "border-accent", bgColor: "bg-accent/5" },
+      { borderColor: "border-destructive", bgColor: "bg-destructive/5" },
+      { borderColor: "border-muted", bgColor: "bg-muted/5" },
+      { borderColor: "border-blue-500", bgColor: "bg-blue-50" }
+    ];
+    
+    const newCpmk = selectedCplIds.map((cplId, index) => {
+      const cpl = marsCompleteData.find(c => c.id === cplId);
+      const colorIndex = index % colors.length;
+      
+      let cpmkDescription = "";
+      
+      // Generate CPMK description based on CPL category and content
+      switch (cpl?.code) {
+        case "PP-CPL1":
+          cpmkDescription = "Mampu menguasai dan menerapkan teori dan konsep manajemen serta prinsip bisnis visioner dalam konteks pelayanan kesehatan yang islami sesuai mata kuliah ini.";
+          break;
+        case "PP-CPL2":
+          cpmkDescription = "Mampu menganalisis faktor internal dan eksternal yang mempengaruhi organisasi kesehatan dengan pendekatan Evidence Based Management Practice untuk sustainability.";
+          break;
+        case "KU-CPL3":
+          cpmkDescription = "Mampu menerapkan hasil kajian kritis dan analisis untuk menyelesaikan masalah dalam mata kuliah ini melalui kolaborasi inter, multi dan trans-disiplin.";
+          break;
+        case "KU-CPL4":
+          cpmkDescription = "Mampu mengintegrasikan inisiatif, argumen saintifik, dan data hasil penelitian serta mengkomunikasikannya melalui berbagai media dalam konteks mata kuliah ini.";
+          break;
+        case "KK-CPL5":
+          cpmkDescription = "Mampu menghasilkan nilai tambah dalam pengelolaan pelayanan kesehatan yang mendukung transformasi menuju smart hospital sesuai scope mata kuliah ini.";
+          break;
+        case "KK-CPL6":
+          cpmkDescription = "Mampu mengembangkan pelayanan kesehatan yang efektif dan efisien menggunakan pendekatan teknologi dalam konteks mata kuliah ini.";
+          break;
+        default:
+          cpmkDescription = `Mampu menerapkan kompetensi ${cpl?.title.toLowerCase()} sesuai dengan ${cpl?.description} dalam konteks mata kuliah ini.`;
+      }
+      
+      return {
+        id: index + 1,
+        title: `CPMK-${index + 1}`,
+        description: cpmkDescription,
+        borderColor: colors[colorIndex].borderColor,
+        bgColor: colors[colorIndex].bgColor,
+        relatedCpl: cpl?.code
+      };
+    });
+    
+    setCpmkItems(newCpmk);
+    toast({ 
+      title: "CPMK berhasil digenerate!", 
+      description: `${newCpmk.length} CPMK telah dibuat otomatis berdasarkan CPL yang dipilih.` 
+    });
+  };
+
+  // Auto-generate CPMK when CPL selection changes
+  useEffect(() => {
+    if (selectedCplIds.length > 0) {
+      generateCpmkFromCpl();
+    }
+  }, [selectedCplIds]);
   
   const [subCpmkItems, setSubCpmkItems] = useState([
     { id: 1, code: "Sub-CPMK-1", description: "Mampu menjelaskan aspek khusus dari mata kuliah dengan tingkat pemahaman yang mendalam." },
@@ -885,19 +959,30 @@ const CourseRPS = () => {
             <TabsContent value="cpmk">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <ListChecks className="h-5 w-5" />
-                      Capaian Pembelajaran Mata Kuliah (CPMK)
-                    </div>
-                    <Dialog open={newCpmkDialog} onOpenChange={setNewCpmkDialog}>
-                      <DialogTrigger asChild>
-                        <Button size="sm" className="gap-2">
-                          <Plus className="h-4 w-4" />
-                          Tambah CPMK
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
+                   <CardTitle className="flex items-center justify-between">
+                     <div className="flex items-center gap-2">
+                       <ListChecks className="h-5 w-5" />
+                       <span className="font-bold text-purple-800">Capaian Pembelajaran Mata Kuliah (CPMK)</span>
+                     </div>
+                     <div className="flex gap-2">
+                       <Button 
+                         size="sm" 
+                         variant="outline" 
+                         onClick={generateCpmkFromCpl}
+                         disabled={selectedCplIds.length === 0}
+                         className="gap-2"
+                       >
+                         <Target className="h-4 w-4" />
+                         Generate dari CPL
+                       </Button>
+                       <Dialog open={newCpmkDialog} onOpenChange={setNewCpmkDialog}>
+                         <DialogTrigger asChild>
+                           <Button size="sm" className="gap-2">
+                             <Plus className="h-4 w-4" />
+                             Tambah Manual
+                           </Button>
+                         </DialogTrigger>
+                         <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Tambah CPMK Baru</DialogTitle>
                           <DialogDescription>
@@ -931,16 +1016,29 @@ const CourseRPS = () => {
                             <Save className="h-4 w-4 mr-2" />
                             Simpan
                           </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </CardTitle>
+                         </DialogFooter>
+                       </DialogContent>
+                     </Dialog>
+                   </div>
+                 </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {cpmkItems.map((item) => (
-                      <div key={item.id} className={`p-4 border-l-4 ${item.borderColor} ${item.bgColor}`}>
-                        {editingCpmk === item.id ? (
+                 <CardContent>
+                   {selectedCplIds.length > 0 && (
+                     <div className="mb-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                       <h4 className="font-semibold text-purple-800 mb-2">
+                         CPMK Otomatis dari CPL Terpilih
+                       </h4>
+                       <p className="text-sm text-purple-700">
+                         CPMK di bawah ini telah digenerate otomatis berdasarkan {selectedCplIds.length} CPL yang Anda pilih. 
+                         Klik "Generate dari CPL" untuk memperbarui jika ada perubahan CPL.
+                       </p>
+                     </div>
+                   )}
+                   
+                   <div className="space-y-4">
+                     {cpmkItems.map((item) => (
+                       <div key={item.id} className={`p-4 border-l-4 ${item.borderColor} ${item.bgColor}`}>
+                         {editingCpmk === item.id ? (
                           <div className="space-y-3">
                             <Input
                               defaultValue={item.title}
@@ -970,30 +1068,37 @@ const CourseRPS = () => {
                               </Button>
                             </div>
                           </div>
-                        ) : (
-                          <>
-                            <div className="flex items-start justify-between mb-2">
-                              <h4 className="font-semibold">{item.title}</h4>
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => setEditingCpmk(item.id)}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => deleteCpmkItem(item.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                            <p className="text-muted-foreground text-sm">{item.description}</p>
-                          </>
-                        )}
+                         ) : (
+                           <>
+                             <div className="flex items-start justify-between mb-2">
+                               <div className="flex items-center gap-2">
+                                 <h4 className="font-semibold">{item.title}</h4>
+                                 {item.relatedCpl && (
+                                   <Badge variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-300">
+                                     Dari {item.relatedCpl}
+                                   </Badge>
+                                 )}
+                               </div>
+                               <div className="flex gap-1">
+                                 <Button
+                                   size="sm"
+                                   variant="ghost"
+                                   onClick={() => setEditingCpmk(item.id)}
+                                 >
+                                   <Edit className="h-4 w-4" />
+                                 </Button>
+                                 <Button
+                                   size="sm"
+                                   variant="ghost"
+                                   onClick={() => deleteCpmkItem(item.id)}
+                                 >
+                                   <Trash2 className="h-4 w-4" />
+                                 </Button>
+                               </div>
+                             </div>
+                             <p className="text-muted-foreground text-sm">{item.description}</p>
+                           </>
+                         )}
                       </div>
                     ))}
                   </div>
