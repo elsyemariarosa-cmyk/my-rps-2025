@@ -435,20 +435,20 @@ const CourseRPS = () => {
     toast({ title: "CPMK berhasil dihapus", description: "Item CPMK telah dihapus." });
   };
 
-  // Course data
+  // Course data - synchronized with Header component data
   const courseData: { [key: string]: { [key: string]: { name: string; sks: number; code: string } } } = {
     "semester-1": {
-      "metodologi-penelitian-pelayanan-kesehatan": { name: "Metodologi Penelitian Pelayanan Kesehatan", sks: 3, code: "MRS101" },
-      "manajemen-strategik-1": { name: "Manajemen Strategik 1", sks: 3, code: "MRS102" },
-      "manajemen-keuangan-rs": { name: "Manajemen Keuangan RS", sks: 3, code: "MRS103" },
-      "sistem-informasi-manajemen-rs": { name: "Sistem Informasi Manajemen RS", sks: 3, code: "MRS104" },
-      "manajemen-sumber-daya-manusia-rs": { name: "Manajemen Sumber Daya Manusia RS", sks: 3, code: "MRS105" },
-      "hukum-kesehatan": { name: "Hukum Kesehatan", sks: 2, code: "MRS106" }
+      "literasi-digital-akademik": { name: "Literasi Digital Akademik", sks: 1, code: "MRS101" },
+      "manajemen-pelayanan-rs": { name: "Manajemen Pelayanan RS", sks: 4, code: "MRS102" },
+      "pengantar-manajemen-keuangan": { name: "Pengantar Manajemen Keuangan", sks: 2, code: "MRS103" },
+      "digitalisasi-rs": { name: "Digitalisasi RS", sks: 2, code: "MRS104" },
+      "metodologi-penelitian-pelayanan-kesehatan": { name: "Metodologi Penelitian Pelayanan Kesehatan", sks: 4, code: "MRS105" },
+      "manajemen-keuangan-rs": { name: "Manajemen Keuangan RS", sks: 2, code: "MRS106" }
     },
     "semester-2": {
-      "manajemen-strategik-2": { name: "Manajemen Strategik 2", sks: 3, code: "MRS201" },
-      "manajemen-pelayanan-medis": { name: "Manajemen Pelayanan Medis", sks: 3, code: "MRS202" },
-      "manajemen-mutu-rs": { name: "Manajemen Mutu RS", sks: 3, code: "MRS203" },
+      "manajemen-sdm-perilaku-kepemimpinan-rs": { name: "Manajemen SDM, Perilaku dan Kepemimpinan RS", sks: 3, code: "MRS201" },
+      "manajemen-pencegahan-pengendalian-infeksi-rs": { name: "Manajemen Pencegahan dan Pengendalian Infeksi RS", sks: 2, code: "MRS202" },
+      "pemberdayaan-masyarakat-kesehatan": { name: "Pemberdayaan Masyarakat Kesehatan", sks: 4, code: "MRS203" },
       "manajemen-pemasaran-jasa-kesehatan": { name: "Manajemen Pemasaran Jasa Kesehatan", sks: 2, code: "MRS204" },
       "manajemen-pelayanan-khusus-rs": { name: "Manajemen Pelayanan Khusus RS", sks: 2, code: "MRS205" },
       "manajemen-strategik-rs": { name: "Manajemen Strategik RS", sks: 3, code: "MRS206" },
