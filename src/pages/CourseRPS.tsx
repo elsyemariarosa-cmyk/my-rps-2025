@@ -243,13 +243,116 @@ const CourseRPS = () => {
     }
   }, [selectedCplIds]);
 
+  // Generate Sub-CPMK automatically based on CPMK
+  const generateSubCpmkFromCpmk = () => {
+    if (cpmkItems.length === 0) {
+      toast({ 
+        title: "Tidak ada CPMK", 
+        description: "Silakan tentukan CPMK terlebih dahulu sebelum membuat Sub-CPMK." 
+      });
+      return;
+    }
+    
+    const newSubCpmk: any[] = [];
+    
+    cpmkItems.forEach((cpmk, cpmkIndex) => {
+      // Generate 2-3 Sub-CPMK for each CPMK
+      const subCpmkCount = 3; // Default 3 Sub-CPMK per CPMK
+      
+      for (let i = 1; i <= subCpmkCount; i++) {
+        const subCpmkNumber = (cpmkIndex * subCpmkCount) + i;
+        let description = "";
+        
+        // Generate description based on CPMK content and cognitive levels
+        if (i === 1) {
+          // First Sub-CPMK: Understanding/Knowledge level
+          description = `Mampu memahami dan menjelaskan konsep dasar ${cpmk.description.toLowerCase().replace('mampu ', '')}`;
+        } else if (i === 2) {
+          // Second Sub-CPMK: Application/Analysis level  
+          description = `Mampu menganalisis dan menerapkan ${cpmk.description.toLowerCase().replace('mampu ', '')} dalam konteks nyata`;
+        } else {
+          // Third Sub-CPMK: Evaluation/Synthesis level
+          description = `Mampu mengevaluasi dan mengintegrasikan ${cpmk.description.toLowerCase().replace('mampu ', '')} untuk menghasilkan solusi inovatif`;
+        }
+        
+        newSubCpmk.push({
+          id: subCpmkNumber,
+          code: `Sub-CPMK-${subCpmkNumber}`,
+          description: description,
+          relatedCpmk: cpmk.title,
+          bloomLevel: i === 1 ? "C2-C3" : i === 2 ? "C3-C4" : "C5-C6"
+        });
+      }
+    });
+    
+    setSubCpmkItems(newSubCpmk);
+    toast({ 
+      title: "Sub-CPMK berhasil digenerate!", 
+      description: `${newSubCpmk.length} Sub-CPMK telah dibuat otomatis berdasarkan ${cpmkItems.length} CPMK.` 
+    });
+  };
+
+  // Add additional Sub-CPMK for specific CPMK
+  const addSubCpmkForCpmk = (cpmkTitle: string) => {
+    const cpmk = cpmkItems.find(c => c.title === cpmkTitle);
+    if (!cpmk) return;
+
+    const existingSubCpmkForCpmk = subCpmkItems.filter(item => item.relatedCpmk === cpmkTitle);
+    const subCpmkNumber = existingSubCpmkForCpmk.length + 1;
+    const newId = Math.max(...subCpmkItems.map(item => item.id), 0) + 1;
+    
+    let description = "";
+    let bloomLevel = "";
+    
+    // Generate description based on cognitive level
+    if (subCpmkNumber <= 2) {
+      description = `Mampu memahami dan menjelaskan aspek khusus dari ${cpmk.description.toLowerCase().replace('mampu ', '')}`;
+      bloomLevel = "C2-C3";
+    } else if (subCpmkNumber <= 4) {
+      description = `Mampu menganalisis dan menerapkan ${cpmk.description.toLowerCase().replace('mampu ', '')} dalam situasi praktis`;
+      bloomLevel = "C3-C4"; 
+    } else {
+      description = `Mampu mengevaluasi dan menciptakan solusi inovatif berdasarkan ${cpmk.description.toLowerCase().replace('mampu ', '')}`;
+      bloomLevel = "C5-C6";
+    }
+    
+    const newSubCpmk = {
+      id: newId,
+      code: `Sub-CPMK-${newId}`,
+      description: description,
+      relatedCpmk: cpmkTitle,
+      bloomLevel: bloomLevel
+    };
+    
+    setSubCpmkItems([...subCpmkItems, newSubCpmk]);
+    toast({ 
+      title: "Sub-CPMK berhasil ditambahkan!", 
+      description: `Sub-CPMK baru dari ${cpmkTitle} telah ditambahkan.` 
+    });
+  };
+
+  // Get Sub-CPMK grouped by CPMK
+  const getSubCpmkGroupedByCpmk = () => {
+    const grouped: { [key: string]: typeof subCpmkItems } = {};
+    
+    subCpmkItems.forEach(subCpmk => {
+      const cpmkTitle = subCpmk.relatedCpmk || 'Manual';
+      if (!grouped[cpmkTitle]) {
+        grouped[cpmkTitle] = [];
+      }
+      grouped[cpmkTitle].push(subCpmk);
+    });
+    
+    return grouped;
+  };
+
   // Sub-CPMK state
   const [subCpmkItems, setSubCpmkItems] = useState([
-    { id: 1, code: "Sub-CPMK-1", description: "Mampu menjelaskan aspek khusus dari mata kuliah dengan tingkat pemahaman yang mendalam." },
-    { id: 2, code: "Sub-CPMK-2", description: "Mampu menganalisis komponen-komponen penting dalam mata kuliah." },
-    { id: 3, code: "Sub-CPMK-3", description: "Mampu mengevaluasi dan memberikan rekomendasi berdasarkan pemahaman mata kuliah." },
-    { id: 4, code: "Sub-CPMK-4", description: "Mampu mengintegrasikan pengetahuan dengan praktik profesional." },
-    { id: 5, code: "Sub-CPMK-5", description: "Mampu mengkomunikasikan hasil pembelajaran secara efektif." }
+    { id: 1, code: "Sub-CPMK-1", description: "Mampu menjelaskan aspek khusus dari mata kuliah dengan tingkat pemahaman yang mendalam.", relatedCpmk: "", bloomLevel: "C2-C3" },
+    { id: 2, code: "Sub-CPMK-2", description: "Mampu menganalisis komponen-komponen penting dalam mata kuliah.", relatedCpmk: "", bloomLevel: "C3-C4" },
+    { id: 3, code: "Sub-CPMK-3", description: "Mampu mengevaluasi dan memberikan rekomendasi berdasarkan pemahaman mata kuliah.", relatedCpmk: "", bloomLevel: "C5-C6" },
+    { id: 4, code: "Sub-CPMK-4", description: "Mampu mengintegrasikan pengetahuan dengan praktik profesional.", relatedCpmk: "", bloomLevel: "C4-C5" },
+    { id: 5, code: "Sub-CPMK-5", description: "Mampu mengkomunikasikan hasil pembelajaran secara efektif.", relatedCpmk: "", bloomLevel: "C3-C4" }
   ]);
 
   // Learning activities state - automatically generated from Sub-CPMK
@@ -862,8 +965,206 @@ const CourseRPS = () => {
             {/* Placeholder for other tabs */}
             <TabsContent value="subcpmk">
               <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <GitBranch className="h-5 w-5" />
+                      <span className="font-bold text-orange-800">Sub-Capaian Pembelajaran Mata Kuliah (Sub-CPMK)</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={generateSubCpmkFromCpmk}
+                        disabled={cpmkItems.length === 0}
+                        className="gap-2"
+                      >
+                        <ListChecks className="h-4 w-4" />
+                        Generate dari CPMK
+                      </Button>
+                      <Dialog open={newSubCpmkDialog} onOpenChange={setNewSubCpmkDialog}>
+                        <DialogTrigger asChild>
+                          <Button size="sm" className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            Tambah Manual
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Tambah Sub-CPMK Baru</DialogTitle>
+                            <DialogDescription>
+                              Masukkan kode dan deskripsi untuk Sub-CPMK baru.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <label className="text-sm font-medium">Kode Sub-CPMK</label>
+                              <Input
+                                value={subCpmkForm.code}
+                                onChange={(e) => setSubCpmkForm(prev => ({ ...prev, code: e.target.value }))}
+                                placeholder="Contoh: Sub-CPMK-10"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium">Deskripsi Sub-CPMK</label>
+                              <Textarea
+                                value={subCpmkForm.description}
+                                onChange={(e) => setSubCpmkForm(prev => ({ ...prev, description: e.target.value }))}
+                                placeholder="Masukkan deskripsi lengkap Sub-CPMK..."
+                                rows={3}
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setNewSubCpmkDialog(false)}>
+                              Batal
+                            </Button>
+                            <Button onClick={() => {
+                              if (subCpmkForm.code && subCpmkForm.description) {
+                                const newId = Math.max(...subCpmkItems.map(item => item.id), 0) + 1;
+                                setSubCpmkItems([...subCpmkItems, { 
+                                  id: newId, 
+                                  code: subCpmkForm.code, 
+                                  description: subCpmkForm.description,
+                                  relatedCpmk: "",
+                                  bloomLevel: "C3-C4"
+                                }]);
+                                setSubCpmkForm({ code: "", description: "" });
+                                setNewSubCpmkDialog(false);
+                                toast({ title: "Sub-CPMK berhasil ditambahkan", description: "Item Sub-CPMK baru telah disimpan." });
+                              }
+                            }}>
+                              <Save className="h-4 w-4 mr-2" />
+                              Simpan
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Sub-CPMK content placeholder</p>
+                  {cpmkItems.length > 0 && (
+                    <div className="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                      <h4 className="font-semibold text-orange-800 mb-2">
+                        Sub-CPMK Otomatis dari CPMK
+                      </h4>
+                      <p className="text-sm text-orange-700">
+                        Sub-CPMK di bawah ini akan digenerate otomatis berdasarkan {cpmkItems.length} CPMK yang telah ditentukan. 
+                        Setiap CPMK akan menghasilkan 3 Sub-CPMK dengan tingkat kognitif yang berbeda.
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-6">
+                    {Object.entries(getSubCpmkGroupedByCpmk()).map(([cpmkTitle, subCpmkGroup]) => (
+                      <div key={cpmkTitle} className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <h5 className="font-semibold text-orange-800">
+                              {cpmkTitle === 'Manual' ? 'Sub-CPMK Manual' : `Sub-CPMK dari ${cpmkTitle}`}
+                            </h5>
+                            <Badge variant="outline" className="text-xs">
+                              {subCpmkGroup.length} Sub-CPMK
+                            </Badge>
+                          </div>
+                          {cpmkTitle !== 'Manual' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => addSubCpmkForCpmk(cpmkTitle)}
+                              className="gap-1 text-xs"
+                            >
+                              <Plus className="h-3 w-3" />
+                              Tambah Sub-CPMK
+                            </Button>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {subCpmkGroup.map((item) => (
+                            <div key={item.id} className="p-4 border border-orange-200 bg-orange-50 rounded-lg">
+                              {editingSubCpmk === item.id ? (
+                                <div className="space-y-3">
+                                  <Input
+                                    defaultValue={item.code}
+                                    onChange={(e) => item.code = e.target.value}
+                                    className="font-semibold"
+                                  />
+                                  <Textarea
+                                    defaultValue={item.description}
+                                    onChange={(e) => item.description = e.target.value}
+                                    rows={3}
+                                  />
+                                  <div className="flex gap-2">
+                                    <Button 
+                                      size="sm" 
+                                      onClick={() => {
+                                        setSubCpmkItems(subCpmkItems.map(subItem => 
+                                          subItem.id === item.id ? { ...subItem, code: item.code, description: item.description } : subItem
+                                        ));
+                                        setEditingSubCpmk(null);
+                                        toast({ title: "Sub-CPMK berhasil diperbarui", description: "Perubahan telah disimpan." });
+                                      }}
+                                    >
+                                      <Save className="h-4 w-4 mr-1" />
+                                      Simpan
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline" 
+                                      onClick={() => setEditingSubCpmk(null)}
+                                    >
+                                      <X className="h-4 w-4 mr-1" />
+                                      Batal
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                      <h4 className="font-semibold text-orange-900">{item.code}</h4>
+                                      {item.relatedCpmk && (
+                                        <Badge variant="outline" className="text-xs bg-orange-100 text-orange-800 border-orange-300">
+                                          Dari {item.relatedCpmk}
+                                        </Badge>
+                                      )}
+                                      {item.bloomLevel && (
+                                        <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800 border-blue-300">
+                                          {item.bloomLevel}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    <div className="flex gap-1">
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setEditingSubCpmk(item.id)}
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => {
+                                          setSubCpmkItems(subCpmkItems.filter(subItem => subItem.id !== item.id));
+                                          toast({ title: "Sub-CPMK berhasil dihapus", description: "Item Sub-CPMK telah dihapus." });
+                                        }}
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  <p className="text-orange-800 text-sm">{item.description}</p>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
