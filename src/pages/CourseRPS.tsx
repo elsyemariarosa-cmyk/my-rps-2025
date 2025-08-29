@@ -1171,8 +1171,121 @@ const CourseRPS = () => {
 
             <TabsContent value="rencana">
               <Card>
-                <CardContent>
-                  <p className="text-muted-foreground">Rencana content placeholder</p>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    <span className="font-bold text-indigo-800">Rencana Kegiatan Pembelajaran</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Weekly Learning Plan Table */}
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg">
+                    <h3 className="font-bold text-indigo-900 mb-4 text-lg">Rencana Pembelajaran Mingguan</h3>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-indigo-100">
+                            <TableHead className="font-bold text-indigo-900 text-center w-16">Minggu</TableHead>
+                            <TableHead className="font-bold text-indigo-900 text-center">Sub-CPMK</TableHead>
+                            <TableHead className="font-bold text-indigo-900 text-center">Materi Pembelajaran</TableHead>
+                            <TableHead className="font-bold text-indigo-900 text-center">Metode</TableHead>
+                            <TableHead className="font-bold text-indigo-900 text-center">Waktu</TableHead>
+                            <TableHead className="font-bold text-indigo-900 text-center">Pengalaman Belajar</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {learningActivities.map((activity, index) => (
+                            <TableRow key={activity.id} className={index % 2 === 0 ? "bg-white" : "bg-indigo-25"}>
+                              <TableCell className="text-center font-medium">{activity.week}</TableCell>
+                              <TableCell className="font-medium text-purple-700">{activity.subCpmk}</TableCell>
+                              <TableCell>{activity.learningMaterials || "Materi sesuai Sub-CPMK"}</TableCell>
+                              <TableCell>{activity.offlineLearning || "Ceramah, Diskusi"}</TableCell>
+                              <TableCell className="text-center">3 x 50 menit</TableCell>
+                              <TableCell>{activity.onlineLearning || "Mahasiswa mengikuti kuliah dan diskusi"}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+
+                  {/* Learning Methods */}
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg">
+                    <h3 className="font-bold text-green-900 mb-4 text-lg">Metode Pembelajaran</h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <div className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-green-500">
+                          <h4 className="font-semibold text-green-800 mb-2">1. Ceramah Interaktif</h4>
+                          <p className="text-sm text-gray-700">Penyampaian materi dengan melibatkan partisipasi aktif mahasiswa melalui tanya jawab dan diskusi.</p>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500">
+                          <h4 className="font-semibold text-blue-800 mb-2">2. Diskusi Kelompok</h4>
+                          <p className="text-sm text-gray-700">Pembahasan kasus dan permasalahan dalam kelompok kecil untuk mengembangkan kemampuan analisis.</p>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-purple-500">
+                          <h4 className="font-semibold text-purple-800 mb-2">3. Studi Kasus</h4>
+                          <p className="text-sm text-gray-700">Analisis kasus nyata untuk mengaplikasikan teori dalam situasi praktis.</p>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-orange-500">
+                          <h4 className="font-semibold text-orange-800 mb-2">4. Presentasi</h4>
+                          <p className="text-sm text-gray-700">Penyajian hasil analisis dan penelitian oleh mahasiswa untuk melatih kemampuan komunikasi.</p>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-red-500">
+                          <h4 className="font-semibold text-red-800 mb-2">5. Praktik Lapangan</h4>
+                          <p className="text-sm text-gray-700">Observasi dan praktik langsung di lapangan untuk mengaplikasikan teori.</p>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-indigo-500">
+                          <h4 className="font-semibold text-indigo-800 mb-2">6. E-Learning</h4>
+                          <p className="text-sm text-gray-700">Pembelajaran daring melalui platform digital untuk fleksibilitas waktu dan akses.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Learning Experience */}
+                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg">
+                    <h3 className="font-bold text-orange-900 mb-4 text-lg">Pengalaman Belajar Mahasiswa</h3>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="bg-white p-4 rounded-lg shadow-sm">
+                        <h4 className="font-semibold text-yellow-800 mb-3 flex items-center gap-2">
+                          <BookOpen className="h-4 w-4" />
+                          Pembelajaran Teoritis
+                        </h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          <li>• Mengikuti kuliah dan mengambil catatan</li>
+                          <li>• Membaca literatur yang ditugaskan</li>
+                          <li>• Menganalisis konsep dan teori</li>
+                          <li>• Mengerjakan latihan soal</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg shadow-sm">
+                        <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
+                          <Target className="h-4 w-4" />
+                          Pembelajaran Praktis
+                        </h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          <li>• Melakukan studi kasus</li>
+                          <li>• Praktik di laboratorium</li>
+                          <li>• Observasi lapangan</li>
+                          <li>• Simulasi situasi nyata</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg shadow-sm">
+                        <h4 className="font-semibold text-red-800 mb-3 flex items-center gap-2">
+                          <GitBranch className="h-4 w-4" />
+                          Pembelajaran Kolaboratif
+                        </h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          <li>• Diskusi kelompok</li>
+                          <li>• Presentasi hasil kerja</li>
+                          <li>• Peer review dan feedback</li>
+                          <li>• Proyek kelompok</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
