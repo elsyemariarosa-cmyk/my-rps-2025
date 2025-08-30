@@ -1,3 +1,4 @@
+
 import Layout from "@/components/Layout";
 import RPSCard from "@/components/RPSCard";
 import { 
@@ -13,6 +14,8 @@ import {
 } from "lucide-react";
 
 const Index = () => {
+  console.log("Index component rendering...");
+  
   const rpsMenuItems = [
     {
       title: "Deskripsi Mata Kuliah",
@@ -72,8 +75,11 @@ const Index = () => {
     }
   ];
 
+  console.log("RPS Menu Items:", rpsMenuItems.length);
+
   return (
     <Layout>
+      {console.log("Rendering Layout...")}
       {/* Hero Section */}
       <section className="hero-gradient text-white">
         <div className="container mx-auto px-4 py-16">
@@ -112,16 +118,19 @@ const Index = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {rpsMenuItems.map((item, index) => (
-              <RPSCard
-                key={index}
-                title={item.title}
-                description={item.description}
-                icon={item.icon}
-                href={item.href}
-                color={item.color}
-              />
-            ))}
+            {rpsMenuItems.map((item, index) => {
+              console.log(`Rendering card ${index}:`, item.title);
+              return (
+                <RPSCard
+                  key={index}
+                  title={item.title}
+                  description={item.description}
+                  icon={item.icon}
+                  href={item.href}
+                  color={item.color}
+                />
+              );
+            })}
           </div>
         </div>
       </section>
